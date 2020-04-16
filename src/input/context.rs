@@ -1,32 +1,22 @@
 use crate::input::{Output, Source};
+use async_std::prelude::*;
 use std::collections::HashMap;
 use std::error::Error;
 
 pub struct Context {
     source: Source,
-    test_mode: bool,
-    generate_map: bool,
     output: Option<Output>,
 }
 
 impl Context {
-    pub fn new(
-        source: Source,
-        test_mode: bool,
-        generate_map: bool,
-        output: Option<Output>,
-    ) -> Self {
-        Self {
-            source,
-            test_mode,
-            generate_map,
-            output,
-        }
+    pub async fn new(source: Source, output: Option<Output>) -> Self {
+        Self { source, output }
     }
 
-    pub fn map_files(&mut self) -> Result<HashMap<String, String>, Box<dyn Error>> {
+    pub async fn files_map(&mut self) -> Result<HashMap<String, String>, Box<dyn Error>> {
         let map = HashMap::new();
-        for filename in self.source.try_iter()? {
+        let mut map_iter = self.source.try_iter().await?;
+        while let Some(filename) = map_iter.next().await {
             // TODO
         }
         Ok(map)

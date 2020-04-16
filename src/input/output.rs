@@ -13,7 +13,7 @@ enum Segment {
 pub struct Output(Vec<Segment>);
 
 impl Output {
-    pub fn new(format: &str) -> Result<Self, FormatError> {
+    pub async fn new(format: &str) -> Result<Self, FormatError> {
         let mut segments = Vec::new();
         let mut should_escape = false;
         let mut is_parsing_index = false;
@@ -102,7 +102,7 @@ impl Output {
         Ok(Self(segments))
     }
 
-    pub fn format(&self, vars: &[&str]) -> String {
+    pub async fn format(&self, vars: &[&str]) -> String {
         let mut formatted = String::new();
         for segment in self.0.as_slice() {
             match segment {
@@ -113,7 +113,7 @@ impl Output {
                                 let digits = number.to_string();
                                 if digits.len() < padding {
                                     let diff = padding - digits.len();
-                                    for i in 0..diff {
+                                    for _ in 0..diff {
                                         formatted.push('0');
                                     }
                                 }
@@ -134,6 +134,7 @@ impl Output {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use async_std::task;
 
     #[test]
     fn test_valid_formats() {
@@ -180,12 +181,15 @@ mod tests {
             ),
         ];
 
-        while let Some((format, vars, expected)) = format_vars_expected.pop() {
-            let output =
-                Output::new(format).expect(format!("unable to parse format '{}'", format).as_str());
-            let actual = output.format(vars.as_slice());
-            assert_eq!(actual, expected);
-        }
+        task::block_on(async move {
+            while let Some((format, vars, expected)) = format_vars_expected.pop() {
+                let output = Output::new(format)
+                    .await
+                    .expect(format!("unable to parse format '{}'", format).as_str());
+                let actual = output.format(vars.as_slice()).await;
+                assert_eq!(actual, expected);
+            }
+        })
     }
 
     #[test]
@@ -203,8 +207,10 @@ mod tests {
             ("init {2:5 end", FormatError::UnclosedPlaceholder),
         ];
 
-        while let Some((format, err)) = format_error.pop() {
-            assert_eq!(Output::new(format), Err(err));
-        }
+        task::block_on(async move {
+            while let Some((format, err)) = format_error.pop() {
+                assert_eq!(Output::new(format).await, Err(err));
+            }
+        })
     }
 }

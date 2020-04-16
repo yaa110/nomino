@@ -6,6 +6,7 @@ description = "Batch rename utility for developers"
 edition = "2018"
 
 [dependencies]
+async-std = "1.5"
 atty = "0.2"
 clap = { version = "2.33", features = ["yaml"] }
 colored = "1.9"
