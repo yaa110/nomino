@@ -1,0 +1,57 @@
+name: %NAME%
+version: %VERSION%
+about: %DESCRIPTION%
+args:
+  - test:
+      short: t
+      long: test
+      help: Run in test mode and only print the map without renaming files
+  - directory:
+      short: d
+      long: dir
+      help: Set the working directory
+      multiple: false
+      takes_value: true
+      value_name: PATH
+  - generate:
+      short: g
+      long: generate
+      help: Generate map file after renaming files
+      multiple: false
+      takes_value: true
+      value_name: PATH
+      conflicts_with: map
+      requires:
+        - output
+  - map:
+      short: m
+      long: map
+      help: Batch rename files based on map file
+      multiple: false
+      takes_value: true
+      value_name: PATH
+  - sort:
+      short: s
+      long: sort
+      help: Batch rename files (sorted by name) using enumerator
+      multiple: false
+      takes_value: true
+      case_insensitive: true
+      value_name: ORDER
+      possible_values:
+        - ASC
+        - DESC
+      requires:
+        - output
+  - regex:
+      short: r
+      long: regex
+      help: Regex pattern to match by filenames
+      multiple: false
+      value_name: PATTERN
+      requires:
+        - output
+  - output:
+      help: Output pattern to be used for renaming files
+      multiple: false
+      value_name: OUTPUT
