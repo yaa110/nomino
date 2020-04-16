@@ -4,6 +4,8 @@ use async_std::fs;
 use async_std::fs::ReadDir;
 use async_std::prelude::*;
 use async_std::stream::Stream;
+use rayon::iter::ParallelBridge;
+use rayon::prelude::ParallelIterator;
 use regex::Regex;
 use std::error::Error;
 use std::iter::IntoIterator;
@@ -33,12 +35,14 @@ impl InputStream {
             let mut map = Vec::new();
             let mut index = 0;
             while let Some(entry) = entries.next().await {
-                index += 1;
-                let input = entry?.file_name().to_string_lossy().to_string();
-                let index_digits = index.to_string();
-                let output =
-                    formatter.format(vec![input.as_str(), index_digits.as_str()].as_slice());
-                map.push((input, output));
+                if let Ok(entry) = entry {
+                    index += 1;
+                    let input = entry.file_name().to_string_lossy().to_string();
+                    let index_digits = index.to_string();
+                    let output =
+                        formatter.format(vec![input.as_str(), index_digits.as_str()].as_slice());
+                    map.push((input, output));
+                }
             }
             map.sort_by(|a, b| {
                 if order == SortOrder::Asc {
@@ -71,6 +75,7 @@ impl Stream for InputStream {
                         if let Some(cap) = re.captures(input.as_str()) {
                             let vars: Vec<&str> = cap
                                 .iter()
+                                .par_bridge()
                                 .map(|c| c.map(|c| c.as_str()).unwrap_or_default())
                                 .collect();
                             let output = formatter.format(vars.as_slice());
