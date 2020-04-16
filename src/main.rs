@@ -45,7 +45,7 @@ fn run_app() -> Result<(), Box<dyn Error>> {
     if let Some(cwd) = opts.value_of("directory").map(Path::new) {
         set_current_dir(cwd)?;
     }
-    let context = Context::new(
+    let mut context = Context::new(
         read_source(
             opts.value_of("regex"),
             opts.value_of("sort"),
@@ -55,6 +55,7 @@ fn run_app() -> Result<(), Box<dyn Error>> {
         opts.is_present("generate"),
         read_output(opts.value_of("output"))?,
     );
+    let map_file = context.map_files()?;
     Ok(())
 }
 
