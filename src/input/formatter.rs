@@ -10,9 +10,9 @@ enum Segment {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Output(Vec<Segment>);
+pub struct Formatter(Vec<Segment>);
 
-impl Output {
+impl Formatter {
     pub async fn new(format: &str) -> Result<Self, FormatError> {
         let mut segments = Vec::new();
         let mut should_escape = false;
@@ -21,7 +21,7 @@ impl Output {
         let mut current_segment = String::new();
         let mut current_index: usize = 0;
         let mut current_padding: Option<usize> = None;
-        let mut incremental_index = 0;
+        let mut incremental_index = 1;
         for (i, ch) in format.chars().enumerate() {
             if ch == '\\' {
                 should_escape = true;
@@ -102,7 +102,7 @@ impl Output {
         Ok(Self(segments))
     }
 
-    pub async fn format(&self, vars: &[&str]) -> String {
+    pub fn format(&self, vars: &[&str]) -> String {
         let mut formatted = String::new();
         for segment in self.0.as_slice() {
             match segment {
@@ -183,10 +183,10 @@ mod tests {
 
         task::block_on(async move {
             while let Some((format, vars, expected)) = format_vars_expected.pop() {
-                let output = Output::new(format)
+                let output = Formatter::new(format)
                     .await
                     .expect(format!("unable to parse format '{}'", format).as_str());
-                let actual = output.format(vars.as_slice()).await;
+                let actual = output.format(vars.as_slice());
                 assert_eq!(actual, expected);
             }
         })
@@ -209,7 +209,7 @@ mod tests {
 
         task::block_on(async move {
             while let Some((format, err)) = format_error.pop() {
-                assert_eq!(Output::new(format).await, Err(err));
+                assert_eq!(Formatter::new(format).await, Err(err));
             }
         })
     }

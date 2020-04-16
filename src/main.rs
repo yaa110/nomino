@@ -1,9 +1,10 @@
+use async_std::prelude::*;
 use async_std::task;
 use atty::Stream;
 use clap::{load_yaml, App};
 use colored::{self, Colorize};
 use nomino::errors::SourceError;
-use nomino::input::{Context, Output, Source};
+use nomino::input::{Context, Formatter, Source};
 use std::env::{args, set_current_dir};
 use std::error::Error;
 use std::path::Path;
@@ -33,11 +34,11 @@ async fn read_source(
     }
 }
 
-async fn read_output(output: Option<&str>) -> Result<Option<Output>, Box<dyn Error>> {
+async fn read_output(output: Option<&str>) -> Result<Option<Formatter>, Box<dyn Error>> {
     if output.is_none() {
         return Ok(None);
     }
-    Ok(Some(Output::new(output.unwrap()).await?))
+    Ok(Some(Formatter::new(output.unwrap()).await?))
 }
 
 async fn run_app() -> Result<(), Box<dyn Error>> {
@@ -46,7 +47,7 @@ async fn run_app() -> Result<(), Box<dyn Error>> {
     if let Some(cwd) = opts.value_of("directory").map(Path::new) {
         set_current_dir(cwd)?;
     }
-    let mut context = Context::new(
+    let context = Context::new(
         read_source(
             opts.value_of("regex"),
             opts.value_of("sort"),
@@ -56,7 +57,10 @@ async fn run_app() -> Result<(), Box<dyn Error>> {
         read_output(opts.value_of("output")).await?,
     )
     .await;
-    let files_map = context.files_map().await?;
+    let mut map_iter = context.into_iter().await?;
+    while let Some((input, output)) = map_iter.next().await {
+        // TODO
+    }
     // TODO if opts.is_present("generate")
     // TODO if !opts.is_present("test")
     Ok(())

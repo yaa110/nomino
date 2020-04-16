@@ -1,10 +1,12 @@
 pub mod input {
     mod context;
-    mod output;
+    mod formatter;
     mod source;
+    mod stream;
     pub use self::context::*;
-    pub use self::output::*;
+    pub use self::formatter::*;
     pub use self::source::*;
+    pub use self::stream::*;
 }
 
 pub mod errors {

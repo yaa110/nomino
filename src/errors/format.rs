@@ -8,6 +8,7 @@ pub enum FormatError {
     UnopenedPlaceholder,
     InvalidIndex(String),
     InvalidPadding(String),
+    EmptyFormatter,
 }
 
 impl fmt::Display for FormatError {
@@ -34,6 +35,9 @@ impl fmt::Display for FormatError {
                 "[output-format] unable to parse padding of '{}'",
                 padding
             ),
+            FormatError::EmptyFormatter => {
+                write!(f, "[output-format] output formatter must be set")
+            }
         }
     }
 }
