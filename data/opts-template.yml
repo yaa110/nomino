@@ -5,7 +5,7 @@ args:
   - test:
       short: t
       long: test
-      help: Run in test mode and only print the map without renaming files
+      help: Run in test mode without renaming actual files
   - directory:
       short: d
       long: dir
@@ -23,6 +23,10 @@ args:
       conflicts_with: map
       requires:
         - output
+  - print:
+      short: p
+      long: print
+      help: Print map table to stdout
   - map:
       short: m
       long: map
