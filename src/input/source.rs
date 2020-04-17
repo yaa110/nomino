@@ -2,6 +2,7 @@ use crate::errors::SortOrderError;
 use async_std::{fs, task};
 use regex::Regex;
 use serde_json;
+use std::collections::HashMap;
 use std::error::Error;
 
 #[derive(PartialEq)]
@@ -24,7 +25,11 @@ impl Source {
     pub async fn new_map(filename: &str) -> Result<Self, Box<dyn Error>> {
         let contents = fs::read_to_string(filename).await?;
         Ok(Self::Map(
-            task::spawn(async move { serde_json::from_str(contents.as_str()) }).await?,
+            task::spawn(async move {
+                serde_json::from_str(contents.as_str())
+                    .map(|map: HashMap<String, String>| map.into_iter().collect())
+            })
+            .await?,
         ))
     }
 
