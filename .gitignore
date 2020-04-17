@@ -1,3 +1,4 @@
 /target
 /src/opts.yml
 Cargo.lock
+/nomino
