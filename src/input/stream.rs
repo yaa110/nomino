@@ -33,24 +33,24 @@ impl InputStream {
 
         if let Source::Sort(order) = source {
             let mut map = Vec::new();
-            let mut index = 0;
+            let mut inputs = Vec::new();
             while let Some(entry) = entries.next().await {
                 if let Ok(entry) = entry {
-                    index += 1;
-                    let input = entry.file_name().to_string_lossy().to_string();
-                    let index_digits = index.to_string();
-                    let output =
-                        formatter.format(vec![input.as_str(), index_digits.as_str()].as_slice());
-                    map.push((input, output));
+                    inputs.push(entry.file_name().to_string_lossy().to_string());
                 }
             }
-            map.sort_by(|a, b| {
+            inputs.sort_by(|a, b| {
                 if order == SortOrder::Asc {
-                    a.0.as_str().cmp(b.0.as_str())
+                    a.to_lowercase().as_str().cmp(b.to_lowercase().as_str())
                 } else {
-                    b.0.as_str().cmp(a.0.as_str())
+                    b.to_lowercase().as_str().cmp(a.to_lowercase().as_str())
                 }
             });
+            for (i, input) in inputs.into_iter().enumerate() {
+                let index = (i + 1).to_string();
+                let output = formatter.format(vec![input.as_str(), index.as_str()].as_slice());
+                map.push((input, output));
+            }
             return Ok(Self::VectorStream(map.into_iter()));
         }
 

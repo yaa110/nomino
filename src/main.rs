@@ -58,7 +58,7 @@ async fn map_files(
             rename_result = fs::rename(input.as_str(), output.as_str()).await.is_ok();
         }
         if rename_result && need_map {
-            map.as_mut().map(|m| m.insert(input, Value::String(output)));
+            map.as_mut().map(|m| m.insert(output, Value::String(input)));
         }
         rename_result = true;
     }
@@ -71,8 +71,8 @@ async fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> 
     table.set_titles(row!["Input".cyan(), "Output".cyan()]);
     map.into_iter()
         .enumerate()
-        .for_each(|(i, (input, output))| {
-            if let Value::String(output) = output {
+        .for_each(|(i, (output, input))| {
+            if let Value::String(input) = input {
                 if i % 2 == 0 {
                     table.add_row(row![input.as_str(), output.as_str()]);
                 } else {
