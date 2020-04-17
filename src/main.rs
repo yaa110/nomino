@@ -1,4 +1,5 @@
 use async_std::fs;
+use async_std::path::Path as AsyncPath;
 use async_std::prelude::*;
 use async_std::task;
 use atty::Stream;
@@ -45,22 +46,25 @@ async fn read_output(output: Option<&str>) -> Result<Option<Formatter>, Box<dyn 
     Ok(Some(Formatter::new(output.unwrap()).await?))
 }
 
-async fn map_files(
+async fn rename_files(
     context: Context,
     test_mode: bool,
     need_map: bool,
 ) -> Result<Option<Map<String, Value>>, Box<dyn Error>> {
     let mut map_iter = context.into_iter().await?;
     let mut map = if need_map { Some(Map::new()) } else { None };
-    let mut rename_result = true;
-    while let Some((input, output)) = map_iter.next().await {
-        if !test_mode {
-            rename_result = fs::rename(input.as_str(), output.as_str()).await.is_ok();
+    let mut is_renamed = true;
+    while let Some((input, mut output)) = map_iter.next().await {
+        while AsyncPath::new(output.as_str()).exists().await {
+            output = String::from("_") + output.as_str();
         }
-        if rename_result && need_map {
+        if !test_mode {
+            is_renamed = fs::rename(input.as_str(), output.as_str()).await.is_ok();
+        }
+        if is_renamed && need_map {
             map.as_mut().map(|m| m.insert(output, Value::String(input)));
         }
-        rename_result = true;
+        is_renamed = true;
     }
     Ok(map)
 }
@@ -104,7 +108,7 @@ async fn run_app() -> Result<(), Box<dyn Error>> {
     let print_map = opts.is_present("print");
     let generate_map = opts.value_of("generate");
     let test_mode = opts.is_present("test");
-    let map = map_files(context, test_mode, print_map || generate_map.is_some()).await?;
+    let map = rename_files(context, test_mode, print_map || generate_map.is_some()).await?;
     if let Some(map_file) = generate_map {
         fs::write(
             map_file,
