@@ -4,6 +4,8 @@
 
 Batch rename utility for developers
 
+![Alt text](/screenshots/nomino.png?raw=true "Regex Screenshot")
+
 ## How to install
 
 ### Pre-Compiled
