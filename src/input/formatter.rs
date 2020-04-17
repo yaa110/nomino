@@ -139,31 +139,37 @@ mod tests {
     #[test]
     fn test_valid_formats() {
         let mut format_vars_expected = vec![
-            ("{}", vec!["first"], "first"),
-            ("{}{}{3}", vec!["first"], "first"),
+            ("{}", vec!["first", "second"], "second"),
+            ("{}{}{3}", vec!["first", "second"], "second"),
             ("{1}", vec!["first", "second"], "second"),
             (
                 "{1}:{1}.{1}",
                 vec!["first", "second"],
                 "second:second.second",
             ),
-            ("{:2}", vec!["1"], "01"),
-            ("{:2}{:1}", vec!["1", "2"], "012"),
+            ("{:3}", vec!["0", "1"], "001"),
+            ("{:3}", vec!["0", "-1"], "-1"),
+            ("{:3}", vec!["0", "a"], "a"),
+            ("{:2}{:1}", vec!["0", "1", "2"], "012"),
             ("{1:3}", vec!["1", "2"], "002"),
-            ("{}.{}", vec!["first", "second"], "first.second"),
+            ("{}.{}", vec!["first", "second", "third"], "second.third"),
             ("{1}.{0}", vec!["first", "second"], "second.first"),
-            ("{1}.{}", vec!["first", "second"], "second.first"),
+            ("{1}.{}", vec!["first", "second"], "second.second"),
             (
-                "{1} - {} - {} - {}",
-                vec!["first", "second", "third"],
-                "second - first - second - third",
+                "{2} - {} - {} - {}",
+                vec!["first", "second", "third", "fourth"],
+                "third - second - third - fourth",
             ),
             (
                 "init {}{} end",
-                vec!["first", "second"],
-                "init firstsecond end",
+                vec!["first", "second", "third"],
+                "init secondthird end",
             ),
-            (r"init \{{}\} end", vec!["first"], "init {first} end"),
+            (
+                r"init \{{}\} end",
+                vec!["first", "second"],
+                "init {second} end",
+            ),
             (
                 r"init \{{1:2}:{0:2}\} end",
                 vec!["1", "2"],
@@ -176,7 +182,7 @@ mod tests {
             ),
             (
                 r"init {:5}\{\}{:2} end",
-                vec!["1", "2"],
+                vec!["0", "1", "2"],
                 "init 00001{}02 end",
             ),
         ];
