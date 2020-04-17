@@ -21,13 +21,10 @@ args:
   - generate:
       short: g
       long: generate
-      help: Stores a JSON map file in 'PATH' after renaming files
+      help: Stores a JSON map file in '<PATH>' after renaming files
       multiple: false
       takes_value: true
       value_name: PATH
-      conflicts_with: map
-      requires:
-        - output
   - print:
       short: p
       long: print

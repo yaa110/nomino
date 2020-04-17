@@ -1,6 +1,6 @@
 [package]
 name = "nomino"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Navid <yaa110@gmail.com>"]
 description = "Batch rename utility for developers"
 edition = "2018"
