@@ -1,6 +1,7 @@
 name: %NAME%
 version: %VERSION%
 about: %DESCRIPTION%
+author: %REPOSITORY%
 args:
   - test:
       short: t

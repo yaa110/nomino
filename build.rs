@@ -11,6 +11,7 @@ fn main() -> std::io::Result<()> {
     template_contents = template_contents
         .replace("%VERSION%", env!("CARGO_PKG_VERSION"))
         .replace("%NAME%", env!("CARGO_PKG_NAME"))
+        .replace("%REPOSITORY%", env!("CARGO_PKG_REPOSITORY"))
         .replace("%DESCRIPTION%", env!("CARGO_PKG_DESCRIPTION"));
 
     // Write to opts
