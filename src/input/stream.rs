@@ -9,19 +9,21 @@ use rayon::prelude::ParallelIterator;
 use regex::Regex;
 use std::error::Error;
 use std::iter::IntoIterator;
+use std::path::Path;
 use std::pin::Pin;
 use std::task::{Context, Poll};
 use std::vec::IntoIter;
 
 pub enum InputStream {
     VectorStream(IntoIter<(String, String)>),
-    DirectoryStream(Formatter, Regex, ReadDir),
+    DirectoryStream(Formatter, Regex, bool, ReadDir),
 }
 
 impl InputStream {
     pub async fn try_from(
         source: Source,
         formatter: Option<Formatter>,
+        preserve_extension: bool,
     ) -> Result<Self, Box<dyn Error>> {
         if let Source::Map(map) = source {
             return Ok(Self::VectorStream(map.into_iter()));
@@ -48,14 +50,25 @@ impl InputStream {
             });
             for (i, input) in inputs.into_iter().enumerate() {
                 let index = (i + 1).to_string();
-                let output = formatter.format(vec![input.as_str(), index.as_str()].as_slice());
+                let mut output = formatter.format(vec![input.as_str(), index.as_str()].as_slice());
+                if preserve_extension {
+                    if let Some(extension) = Path::new(input.as_str()).extension() {
+                        output.push('.');
+                        output.push_str(extension.to_str().unwrap_or_default());
+                    }
+                }
                 map.push((input, output));
             }
             return Ok(Self::VectorStream(map.into_iter()));
         }
 
         if let Source::Regex(re) = source {
-            return Ok(Self::DirectoryStream(formatter, re, entries));
+            return Ok(Self::DirectoryStream(
+                formatter,
+                re,
+                preserve_extension,
+                entries,
+            ));
         }
 
         Err(Box::new(SourceError::new(String::from("unknown source"))))
@@ -68,7 +81,7 @@ impl Stream for InputStream {
     fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
         match self.get_mut() {
             Self::VectorStream(ref mut iter) => Poll::Ready(iter.next()),
-            Self::DirectoryStream(ref formatter, ref re, iter) => {
+            Self::DirectoryStream(ref formatter, ref re, preserve_extension, iter) => {
                 match Pin::new(iter).poll_next(cx) {
                     Poll::Ready(Some(Ok(entry))) => {
                         let input = entry.file_name().to_string_lossy().to_string();
@@ -78,7 +91,13 @@ impl Stream for InputStream {
                                 .par_bridge()
                                 .map(|c| c.map(|c| c.as_str()).unwrap_or_default())
                                 .collect();
-                            let output = formatter.format(vars.as_slice());
+                            let mut output = formatter.format(vars.as_slice());
+                            if *preserve_extension {
+                                if let Some(extension) = Path::new(input.as_str()).extension() {
+                                    output.push('.');
+                                    output.push_str(extension.to_str().unwrap_or_default());
+                                }
+                            }
                             return Poll::Ready(Some((input, output)));
                         }
                         Poll::Pending

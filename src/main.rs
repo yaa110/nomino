@@ -98,6 +98,7 @@ async fn run_app() -> Result<(), Box<dyn Error>> {
         )
         .await?,
         read_output(opts.value_of("output")).await?,
+        opts.is_present("extension"),
     )
     .await;
     let print_map = opts.is_present("print");

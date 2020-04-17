@@ -6,18 +6,22 @@ args:
   - test:
       short: t
       long: test
-      help: Run in test mode without renaming actual files
+      help: Runs in test mode without renaming actual files
+  - extension:
+      short: e
+      long: extension
+      help: Preserves the extension of input files in 'sort' and 'regex' options
   - directory:
       short: d
       long: dir
-      help: Set the working directory
+      help: Sets the working directory
       multiple: false
       takes_value: true
       value_name: PATH
   - generate:
       short: g
       long: generate
-      help: Generate map file after renaming files
+      help: Stores a JSON map file in 'PATH' after renaming files
       multiple: false
       takes_value: true
       value_name: PATH
@@ -27,18 +31,18 @@ args:
   - print:
       short: p
       long: print
-      help: Print map table to stdout
+      help: Prints the map table to stdout
   - map:
       short: m
       long: map
-      help: Batch rename files based on map file
+      help: Sets the path of map file to be used for renaming files
       multiple: false
       takes_value: true
       value_name: PATH
   - sort:
       short: s
       long: sort
-      help: Batch rename files (sorted by name) using enumerator
+      help: Sets the order of sorting (by name) to rename files using enumerator
       multiple: false
       takes_value: true
       case_insensitive: true
@@ -51,7 +55,7 @@ args:
   - regex:
       short: r
       long: regex
-      help: Regex pattern to match by filenames
+      help: Regex pattern (RE2 syntax) to match by filenames
       multiple: false
       value_name: PATTERN
       requires:
