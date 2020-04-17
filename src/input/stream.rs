@@ -4,8 +4,6 @@ use async_std::fs;
 use async_std::fs::ReadDir;
 use async_std::prelude::*;
 use async_std::stream::Stream;
-use rayon::iter::ParallelBridge;
-use rayon::prelude::ParallelIterator;
 use regex::Regex;
 use std::error::Error;
 use std::iter::IntoIterator;
@@ -78,8 +76,8 @@ impl InputStream {
 impl Stream for InputStream {
     type Item = (String, String);
 
-    fn poll_next(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
-        match self.get_mut() {
+    fn poll_next(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Option<Self::Item>> {
+        match self.as_mut().get_mut() {
             Self::VectorStream(ref mut iter) => Poll::Ready(iter.next()),
             Self::DirectoryStream(ref formatter, ref re, preserve_extension, iter) => {
                 match Pin::new(iter).poll_next(cx) {
@@ -88,7 +86,6 @@ impl Stream for InputStream {
                         if let Some(cap) = re.captures(input.as_str()) {
                             let vars: Vec<&str> = cap
                                 .iter()
-                                .par_bridge()
                                 .map(|c| c.map(|c| c.as_str()).unwrap_or_default())
                                 .collect();
                             let mut output = formatter.format(vars.as_slice());
@@ -100,10 +97,11 @@ impl Stream for InputStream {
                             }
                             return Poll::Ready(Some((input, output)));
                         }
-                        Poll::Pending
+                        self.poll_next(cx)
                     }
+                    Poll::Ready(Some(Err(_))) => self.poll_next(cx),
                     Poll::Ready(None) => Poll::Ready(None),
-                    Poll::Pending | Poll::Ready(Some(Err(_))) => Poll::Pending,
+                    Poll::Pending => Poll::Pending,
                 }
             }
         }
