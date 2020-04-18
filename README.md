@@ -15,7 +15,7 @@ you can download a [pre-compiled executable](https://github.com/yaa110/nomino/re
 ### Build Manually
 
 - Install rust: `curl -sSf https://sh.rustup.rs | sh`
-- Run `cargo install --git https://github.com/yaa110/nomino.git`
+- Run `cargo install nomino`
 
 ## Usage
 
