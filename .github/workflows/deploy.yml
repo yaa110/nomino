@@ -1,4 +1,4 @@
-name: RustDeploy
+name: Deploy
 
 on:
   push:
