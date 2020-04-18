@@ -1,6 +1,6 @@
 # nomino
 
-[![Test](https://github.com/yaa110/nomino/workflows/Test/badge.svg)](https://github.com/yaa110/nomino/actions) [![Download](https://img.shields.io/badge/download-release-blue.svg)](https://github.com/yaa110/nomino/releases)
+[![Test](https://github.com/yaa110/nomino/workflows/Test/badge.svg)](https://github.com/yaa110/nomino/actions) [![Download](https://img.shields.io/badge/download-release-blue.svg)](https://github.com/yaa110/nomino/releases) [![Benchmark](https://img.shields.io/badge/test-benchmark-orange.svg)](https://github.com/yaa110/nomino/wiki)
 
 Batch rename utility for developers
 
@@ -178,3 +178,7 @@ Note that `-p` flag is used to print the table and `-e` flag is used to preserve
 | a.mkv     | Nomino (2020) S1.E5.1080p.mkv |
 +-----------+-------------------------------+
 ```
+
+### Benchmark
+
+Please refer to [wiki](https://github.com/yaa110/nomino/wiki) for benchmark results of similar tools.
