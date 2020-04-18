@@ -1,6 +1,6 @@
 # nomino
 
-[![Build Status](https://travis-ci.org/yaa110/nomino.svg?branch=master)](https://travis-ci.org/yaa110/nomino) [![Download](https://img.shields.io/badge/download-release-blue.svg)](https://github.com/yaa110/nomino/releases)
+[![RustTest](https://github.com/yaa110/nomino/workflows/RustTest/badge.svg)](https://github.com/yaa110/nomino/actions) [![Download](https://img.shields.io/badge/download-release-blue.svg)](https://github.com/yaa110/nomino/releases)
 
 Batch rename utility for developers
 
