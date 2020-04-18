@@ -12,6 +12,12 @@ Batch rename utility for developers
 
 you can download a [pre-compiled executable](https://github.com/yaa110/nomino/releases) for Linux, then you should copy that executable to `/usr/bin` or add it to your `$PATH` env. Do not forget to `chmod +x nomino`.
 
+### Arch Linux
+
+You can use [nomino](https://aur.archlinux.org/packages/nomino)<sup>AUR</sup> or [nomino-bin](https://aur.archlinux.org/packages/nomino-bin/)<sup>AUR</sup> packages to install nomino in Arch Linux.
+
+The [nomino](https://aur.archlinux.org/packages/nomino)<sup>AUR</sup> package depends on [rust](https://www.archlinux.org/packages/extra/x86_64/rust) package, if you have installed `rust` using `rustup`, then use `makepkg -dsi` to install it by ignoring dependencies.
+
 ### Build Manually
 
 - Install rust: `curl -sSf https://sh.rustup.rs | sh`
