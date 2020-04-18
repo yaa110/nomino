@@ -1,4 +1,4 @@
-use crate::input::{Formatter, InputStream, Source};
+use crate::input::{Formatter, InputIterator, Source};
 use std::error::Error;
 
 pub struct Context {
@@ -8,11 +8,7 @@ pub struct Context {
 }
 
 impl Context {
-    pub async fn new(
-        source: Source,
-        formatter: Option<Formatter>,
-        preserve_extension: bool,
-    ) -> Self {
+    pub fn new(source: Source, formatter: Option<Formatter>, preserve_extension: bool) -> Self {
         Self {
             source,
             formatter,
@@ -20,7 +16,7 @@ impl Context {
         }
     }
 
-    pub async fn into_iter(self) -> Result<InputStream, Box<dyn Error>> {
-        InputStream::try_from(self.source, self.formatter, self.preserve_extension).await
+    pub fn into_iter(self) -> Result<InputIterator, Box<dyn Error>> {
+        InputIterator::try_from(self.source, self.formatter, self.preserve_extension)
     }
 }

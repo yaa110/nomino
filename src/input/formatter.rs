@@ -13,7 +13,7 @@ enum Segment {
 pub struct Formatter(Vec<Segment>);
 
 impl Formatter {
-    pub async fn new(format: &str) -> Result<Self, FormatError> {
+    pub fn new(format: &str) -> Result<Self, FormatError> {
         let mut segments = Vec::new();
         let mut should_escape = false;
         let mut is_parsing_index = false;
@@ -49,19 +49,17 @@ impl Formatter {
                         } else if is_parsing_padding {
                             current_padding = None;
                         }
-                    } else {
-                        if is_parsing_index {
-                            current_index = current_segment
-                                .as_str()
-                                .parse()
-                                .map_err(|_| FormatError::InvalidIndex(current_segment.clone()))?;
-                            current_padding = None;
-                        } else if is_parsing_padding {
-                            current_padding =
-                                Some(current_segment.as_str().parse().map_err(|_| {
-                                    FormatError::InvalidPadding(current_segment.clone())
-                                })?);
-                        }
+                    } else if is_parsing_index {
+                        current_index = current_segment
+                            .as_str()
+                            .parse()
+                            .map_err(|_| FormatError::InvalidIndex(current_segment.clone()))?;
+                        current_padding = None;
+                    } else if is_parsing_padding {
+                        current_padding =
+                            Some(current_segment.as_str().parse().map_err(|_| {
+                                FormatError::InvalidPadding(current_segment.clone())
+                            })?);
                     }
                     segments.push(Segment::PlaceHolder {
                         padding: current_padding,
@@ -134,7 +132,6 @@ impl Formatter {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use async_std::task;
 
     #[test]
     fn test_valid_formats() {
@@ -187,15 +184,12 @@ mod tests {
             ),
         ];
 
-        task::block_on(async move {
-            while let Some((format, vars, expected)) = format_vars_expected.pop() {
-                let output = Formatter::new(format)
-                    .await
-                    .expect(format!("unable to parse format '{}'", format).as_str());
-                let actual = output.format(vars.as_slice());
-                assert_eq!(actual, expected);
-            }
-        })
+        while let Some((format, vars, expected)) = format_vars_expected.pop() {
+            let output = Formatter::new(format)
+                .expect(format!("unable to parse format '{}'", format).as_str());
+            let actual = output.format(vars.as_slice());
+            assert_eq!(actual, expected);
+        }
     }
 
     #[test]
@@ -213,10 +207,8 @@ mod tests {
             ("init {2:5 end", FormatError::UnclosedPlaceholder),
         ];
 
-        task::block_on(async move {
-            while let Some((format, err)) = format_error.pop() {
-                assert_eq!(Formatter::new(format).await, Err(err));
-            }
-        })
+        while let Some((format, err)) = format_error.pop() {
+            assert_eq!(Formatter::new(format), Err(err));
+        }
     }
 }

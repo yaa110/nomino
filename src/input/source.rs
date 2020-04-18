@@ -1,9 +1,9 @@
 use crate::errors::SortOrderError;
-use async_std::{fs, task};
 use regex::Regex;
 use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
+use std::fs;
 
 #[derive(PartialEq)]
 pub enum SortOrder {
@@ -18,22 +18,18 @@ pub enum Source {
 }
 
 impl Source {
-    pub async fn new_regex(pattern: &str) -> Result<Self, Box<dyn Error>> {
+    pub fn new_regex(pattern: &str) -> Result<Self, Box<dyn Error>> {
         Ok(Self::Regex(Regex::new(pattern)?))
     }
 
-    pub async fn new_map(filename: &str) -> Result<Self, Box<dyn Error>> {
-        let contents = fs::read_to_string(filename).await?;
-        Ok(Self::Map(
-            task::spawn(async move {
-                serde_json::from_str(contents.as_str())
-                    .map(|map: HashMap<String, String>| map.into_iter().collect())
-            })
-            .await?,
-        ))
+    pub fn new_map(filename: &str) -> Result<Self, Box<dyn Error>> {
+        let contents = fs::read_to_string(filename)?;
+        Ok(Self::Map(serde_json::from_str(contents.as_str()).map(
+            |map: HashMap<String, String>| map.into_iter().collect(),
+        )?))
     }
 
-    pub async fn new_sort(order: &str) -> Result<Self, Box<dyn Error>> {
+    pub fn new_sort(order: &str) -> Result<Self, Box<dyn Error>> {
         Ok(Self::Sort(match order.to_lowercase().as_str() {
             "asc" => SortOrder::Asc,
             "desc" => SortOrder::Desc,

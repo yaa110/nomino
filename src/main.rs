@@ -1,7 +1,3 @@
-use async_std::fs;
-use async_std::path::Path as AsyncPath;
-use async_std::prelude::*;
-use async_std::task;
 use atty::Stream;
 use clap::{load_yaml, App};
 use colored::{self, Colorize};
@@ -12,18 +8,19 @@ use serde_json::map::Map;
 use serde_json::value::Value;
 use std::env::{args, set_current_dir};
 use std::error::Error;
+use std::fs;
 use std::path::Path;
 use std::process::exit;
 
-async fn read_source(
+fn read_source(
     regex: Option<&str>,
     sort: Option<&str>,
     map: Option<&str>,
 ) -> Result<Source, Box<dyn Error>> {
     match (regex, sort, map) {
-        (Some(pattern), _, _) => Source::new_regex(pattern).await,
-        (_, Some(order), _) => Source::new_sort(order).await,
-        (_, _, Some(filename)) => Source::new_map(filename).await,
+        (Some(pattern), _, _) => Source::new_regex(pattern),
+        (_, Some(order), _) => Source::new_sort(order),
+        (_, _, Some(filename)) => Source::new_map(filename),
         _ => {
             colored::control::set_override(atty::is(Stream::Stderr));
             Err(Box::new(SourceError::new(format!(
@@ -39,27 +36,27 @@ async fn read_source(
     }
 }
 
-async fn read_output(output: Option<&str>) -> Result<Option<Formatter>, Box<dyn Error>> {
+fn read_output(output: Option<&str>) -> Result<Option<Formatter>, Box<dyn Error>> {
     if output.is_none() {
         return Ok(None);
     }
-    Ok(Some(Formatter::new(output.unwrap()).await?))
+    Ok(Some(Formatter::new(output.unwrap())?))
 }
 
-async fn rename_files(
+fn rename_files(
     context: Context,
     test_mode: bool,
     need_map: bool,
 ) -> Result<Option<Map<String, Value>>, Box<dyn Error>> {
-    let mut map_iter = context.into_iter().await?;
+    let map_iter = context.into_iter()?;
     let mut map = if need_map { Some(Map::new()) } else { None };
     let mut is_renamed = true;
-    while let Some((input, mut output)) = map_iter.next().await {
-        while AsyncPath::new(output.as_str()).exists().await {
+    for (input, mut output) in map_iter {
+        while Path::new(output.as_str()).exists() {
             output = String::from("_") + output.as_str();
         }
         if !test_mode {
-            is_renamed = fs::rename(input.as_str(), output.as_str()).await.is_ok();
+            is_renamed = fs::rename(input.as_str(), output.as_str()).is_ok();
         }
         if is_renamed && need_map {
             map.as_mut().map(|m| m.insert(output, Value::String(input)));
@@ -69,7 +66,7 @@ async fn rename_files(
     Ok(map)
 }
 
-async fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> {
+fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> {
     let mut table = Table::new();
     table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
     table.set_titles(row!["Input".cyan(), "Output".cyan()]);
@@ -88,7 +85,7 @@ async fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> 
     Ok(())
 }
 
-async fn run_app() -> Result<(), Box<dyn Error>> {
+fn run_app() -> Result<(), Box<dyn Error>> {
     let opts_format = load_yaml!("opts.yml");
     let opts = App::from_yaml(opts_format).get_matches();
     if let Some(cwd) = opts.value_of("directory").map(Path::new) {
@@ -99,41 +96,34 @@ async fn run_app() -> Result<(), Box<dyn Error>> {
             opts.value_of("regex"),
             opts.value_of("sort"),
             opts.value_of("map"),
-        )
-        .await?,
-        read_output(opts.value_of("output")).await?,
+        )?,
+        read_output(opts.value_of("output"))?,
         opts.is_present("extension"),
-    )
-    .await;
+    );
     let print_map = opts.is_present("print");
     let generate_map = opts.value_of("generate");
     let test_mode = opts.is_present("test");
-    let map = rename_files(context, test_mode, print_map || generate_map.is_some()).await?;
+    let map = rename_files(context, test_mode, print_map || generate_map.is_some())?;
     if let Some(map_file) = generate_map {
         fs::write(
             map_file,
             serde_json::to_vec_pretty(map.as_ref().unwrap())?.as_slice(),
-        )
-        .await?;
+        )?;
     }
     if print_map {
         colored::control::set_override(atty::is(Stream::Stdout));
-        print_map_table(map.unwrap()).await?;
+        print_map_table(map.unwrap())?;
     }
     Ok(())
 }
 
-async fn async_main() -> i32 {
-    match run_app().await {
+fn main() {
+    exit(match run_app() {
         Ok(_) => 0,
         Err(err) => {
             colored::control::set_override(atty::is(Stream::Stderr));
             eprintln!("{}: {}", "error".red().bold(), err.to_string());
             1
         }
-    }
-}
-
-fn main() {
-    exit(task::block_on(async_main()));
+    });
 }
