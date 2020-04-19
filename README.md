@@ -1,6 +1,6 @@
 # nomino
 
-[![Test](https://github.com/yaa110/nomino/workflows/Test/badge.svg)](https://github.com/yaa110/nomino/actions) [![Download](https://img.shields.io/badge/download-releases-blue.svg)](https://github.com/yaa110/nomino/releases/latest) [![Benchmark](https://img.shields.io/badge/test-benchmark-orange.svg)](https://github.com/yaa110/nomino/wiki)
+[![Test](https://github.com/yaa110/nomino/workflows/Test/badge.svg)](https://github.com/yaa110/nomino/actions) [![Download](https://img.shields.io/badge/download-releases-blue.svg)](https://github.com/yaa110/nomino/releases/latest) [![Wiki](https://img.shields.io/badge/wiki-docs-orange.svg)](https://github.com/yaa110/nomino/wiki)
 
 Batch rename utility for developers
 
