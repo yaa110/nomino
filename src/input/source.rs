@@ -4,6 +4,7 @@ use serde_json;
 use std::collections::HashMap;
 use std::error::Error;
 use std::fs;
+use std::path::MAIN_SEPARATOR;
 
 #[derive(PartialEq)]
 pub enum SortOrder {
@@ -12,14 +13,17 @@ pub enum SortOrder {
 }
 
 pub enum Source {
-    Regex(Regex),
+    Regex(Regex, usize),
     Map(Vec<(String, String)>),
     Sort(SortOrder),
 }
 
 impl Source {
     pub fn new_regex(pattern: &str) -> Result<Self, Box<dyn Error>> {
-        Ok(Self::Regex(Regex::new(pattern)?))
+        Ok(Self::Regex(
+            Regex::new(pattern)?,
+            pattern.chars().filter(|c| *c == MAIN_SEPARATOR).count() + 1,
+        ))
     }
 
     pub fn new_map(filename: &str) -> Result<Self, Box<dyn Error>> {

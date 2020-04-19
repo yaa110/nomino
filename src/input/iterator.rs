@@ -2,11 +2,12 @@ use crate::errors::{FormatError, SourceError};
 use crate::input::{Formatter, SortOrder, Source};
 use regex::Regex;
 use std::error::Error;
-use std::fs::{self, ReadDir};
-use std::iter::IntoIterator;
-use std::iter::Iterator;
+use std::fs;
+use std::iter::{IntoIterator, Iterator};
 use std::path::Path;
 use std::vec::IntoIter;
+use walkdir::IntoIter as WalkIter;
+use walkdir::WalkDir;
 
 pub enum InputIterator {
     VectorIterator(IntoIter<(String, String)>),
@@ -14,7 +15,7 @@ pub enum InputIterator {
         formatter: Formatter,
         re: Regex,
         preserve_extension: bool,
-        iter: ReadDir,
+        iter: WalkIter,
     },
 }
 
@@ -30,12 +31,10 @@ impl InputIterator {
 
         let formatter = formatter.ok_or(FormatError::EmptyFormatter)?;
 
-        let mut entries = fs::read_dir(".")?;
-
         if let Source::Sort(order) = source {
             let mut map = Vec::new();
             let mut inputs = Vec::new();
-            while let Some(entry) = entries.next() {
+            for entry in fs::read_dir(".")? {
                 if let Ok(entry) = entry {
                     inputs.push(entry.file_name().to_string_lossy().to_string());
                 }
@@ -61,12 +60,15 @@ impl InputIterator {
             return Ok(Self::VectorIterator(map.into_iter()));
         }
 
-        if let Source::Regex(re) = source {
+        if let Source::Regex(re, depth) = source {
             return Ok(Self::DirectoryIterator {
                 formatter,
                 re,
                 preserve_extension,
-                iter: entries,
+                iter: WalkDir::new(".")
+                    .min_depth(depth)
+                    .max_depth(depth)
+                    .into_iter(),
             });
         }
 
@@ -88,7 +90,11 @@ impl Iterator for InputIterator {
             } => {
                 for entry in iter {
                     let input = if let Ok(entry) = entry {
-                        entry.file_name().to_string_lossy().to_string()
+                        let path = entry.path();
+                        path.strip_prefix("./")
+                            .unwrap_or(path)
+                            .to_string_lossy()
+                            .to_string()
                     } else {
                         continue;
                     };
