@@ -7,6 +7,10 @@ args:
       short: t
       long: test
       help: Runs in test mode without renaming actual files
+  - overwrite:
+      short: w
+      long: overwrite
+      help: Overwrites output files, otherwise, a '_' is prepended to filename
   - extension:
       short: e
       long: extension

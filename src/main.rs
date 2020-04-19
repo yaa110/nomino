@@ -47,13 +47,16 @@ fn rename_files(
     context: Context,
     test_mode: bool,
     need_map: bool,
+    overwrite: bool,
 ) -> Result<Option<Map<String, Value>>, Box<dyn Error>> {
     let map_iter = context.into_iter()?;
     let mut map = if need_map { Some(Map::new()) } else { None };
     let mut is_renamed = true;
     for (input, mut output) in map_iter {
-        while Path::new(output.as_str()).exists() {
-            output = String::from("_") + output.as_str();
+        if !overwrite {
+            while Path::new(output.as_str()).exists() {
+                output = String::from("_") + output.as_str();
+            }
         }
         if !test_mode {
             is_renamed = fs::rename(input.as_str(), output.as_str()).is_ok();
@@ -100,10 +103,16 @@ fn run_app() -> Result<(), Box<dyn Error>> {
         read_output(opts.value_of("output"))?,
         opts.is_present("extension"),
     );
+    let overwrite = opts.is_present("overwrite");
     let print_map = opts.is_present("print");
     let generate_map = opts.value_of("generate");
     let test_mode = opts.is_present("test");
-    let map = rename_files(context, test_mode, print_map || generate_map.is_some())?;
+    let map = rename_files(
+        context,
+        test_mode,
+        print_map || generate_map.is_some(),
+        overwrite,
+    )?;
     if let Some(map_file) = generate_map {
         fs::write(
             map_file,

@@ -40,6 +40,7 @@ USAGE:
 FLAGS:
     -e, --extension    Preserves the extension of input files in 'sort' and 'regex' options
     -h, --help         Prints help information
+    -w, --overwrite    Overwrites output files, otherwise, a '_' is prepended to filename
     -p, --print        Prints the map table to stdout
     -t, --test         Runs in test mode without renaming actual files
     -V, --version      Prints version information
