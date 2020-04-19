@@ -10,11 +10,16 @@ use std::vec::IntoIter;
 
 pub enum InputIterator {
     VectorIterator(IntoIter<(String, String)>),
-    DirectoryIterator(Formatter, Regex, bool, ReadDir),
+    DirectoryIterator {
+        formatter: Formatter,
+        re: Regex,
+        preserve_extension: bool,
+        iter: ReadDir,
+    },
 }
 
 impl InputIterator {
-    pub fn try_from(
+    pub fn new(
         source: Source,
         formatter: Option<Formatter>,
         preserve_extension: bool,
@@ -57,12 +62,12 @@ impl InputIterator {
         }
 
         if let Source::Regex(re) = source {
-            return Ok(Self::DirectoryIterator(
+            return Ok(Self::DirectoryIterator {
                 formatter,
                 re,
                 preserve_extension,
-                entries,
-            ));
+                iter: entries,
+            });
         }
 
         Err(Box::new(SourceError::new(String::from("unknown source"))))
@@ -74,8 +79,13 @@ impl Iterator for InputIterator {
 
     fn next(&mut self) -> Option<Self::Item> {
         match self {
-            Self::VectorIterator(ref mut iter) => iter.next(),
-            Self::DirectoryIterator(ref formatter, ref re, preserve_extension, ref mut iter) => {
+            Self::VectorIterator(iter) => iter.next(),
+            Self::DirectoryIterator {
+                formatter,
+                re,
+                preserve_extension,
+                iter,
+            } => {
                 for entry in iter {
                     let input = if let Ok(entry) = entry {
                         entry.file_name().to_string_lossy().to_string()
