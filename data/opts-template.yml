@@ -9,6 +9,10 @@ args:
       short: t
       long: test
       help: Runs in test mode without renaming actual files
+  - mkdir:
+      short: k
+      long: mkdir
+      help: Recursively creates all parent directories of '<OUTPUT>' if they are missing
   - overwrite:
       short: w
       long: overwrite

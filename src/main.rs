@@ -48,6 +48,7 @@ fn rename_files(
     test_mode: bool,
     need_map: bool,
     overwrite: bool,
+    mkdir: bool,
 ) -> Result<Option<Map<String, Value>>, Box<dyn Error>> {
     let mut map = if need_map { Some(Map::new()) } else { None };
     let mut is_renamed = true;
@@ -56,6 +57,11 @@ fn rename_files(
             while Path::new(output.as_str()).exists() {
                 output = String::from("_") + output.as_str();
             }
+        }
+        if mkdir {
+            let _ = Path::new(output.as_str())
+                .parent()
+                .and_then(|parent| fs::create_dir_all(parent).ok());
         }
         if !test_mode {
             is_renamed = fs::rename(input.as_str(), output.as_str()).is_ok();
@@ -109,6 +115,7 @@ fn run_app() -> Result<(), Box<dyn Error>> {
         opts.is_present("test"),
         print_map || generate_map.is_some(),
         opts.is_present("overwrite"),
+        opts.is_present("mkdir"),
     )?;
     if let Some(map_file) = generate_map {
         fs::write(
