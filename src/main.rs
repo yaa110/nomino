@@ -53,18 +53,31 @@ fn rename_files(
     let mut map = if need_map { Some(Map::new()) } else { None };
     let mut is_renamed = true;
     for (input, mut output) in context {
+        let mut file_path_buf;
+        let mut file_path = Path::new(output.as_str());
         if !overwrite {
-            while Path::new(output.as_str()).exists() {
-                output = String::from("_") + output.as_str();
+            while file_path.exists() {
+                file_path_buf = file_path
+                    .with_file_name(
+                        (String::from("_")
+                            + file_path
+                                .file_name()
+                                .and_then(|name| name.to_str())
+                                .unwrap_or_default())
+                        .as_str(),
+                    )
+                    .to_path_buf();
+                file_path = file_path_buf.as_path();
+                output = file_path.to_string_lossy().to_string();
             }
         }
         if mkdir {
-            let _ = Path::new(output.as_str())
+            let _ = file_path
                 .parent()
                 .and_then(|parent| fs::create_dir_all(parent).ok());
         }
         if !test_mode {
-            is_renamed = fs::rename(input.as_str(), output.as_str()).is_ok();
+            is_renamed = fs::rename(input.as_str(), file_path).is_ok();
         }
         if is_renamed && need_map {
             map.as_mut().map(|m| m.insert(output, Value::String(input)));
