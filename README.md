@@ -16,7 +16,7 @@ You can download a pre-compiled executable for Linux, MacOS and Windows operatin
 - [MacOS 64bit](https://github.com/yaa110/nomino/releases/latest/download/nomino-macos-64bit)
 - [Windows 64bit](https://github.com/yaa110/nomino/releases/latest/download/nomino-windows-64bit.exe)
 
-You might run `chmod +x nomino-linux-64bit` or `chmod +x nomino-macos-64bit`.
+You might need to run `chmod +x nomino-linux-64bit` or `chmod +x nomino-macos-64bit`.
 
 ### Arch Linux
 
