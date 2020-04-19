@@ -1,6 +1,6 @@
 # nomino
 
-[![Test](https://github.com/yaa110/nomino/workflows/Test/badge.svg)](https://github.com/yaa110/nomino/actions) [![Download](https://img.shields.io/badge/download-release-blue.svg)](https://github.com/yaa110/nomino/releases) [![Benchmark](https://img.shields.io/badge/test-benchmark-orange.svg)](https://github.com/yaa110/nomino/wiki)
+[![Test](https://github.com/yaa110/nomino/workflows/Test/badge.svg)](https://github.com/yaa110/nomino/actions) [![Download](https://img.shields.io/badge/download-releases-blue.svg)](https://github.com/yaa110/nomino/releases/latest) [![Benchmark](https://img.shields.io/badge/test-benchmark-orange.svg)](https://github.com/yaa110/nomino/wiki)
 
 Batch rename utility for developers
 
@@ -10,7 +10,13 @@ Batch rename utility for developers
 
 ### Pre-Compiled
 
-you can download a [pre-compiled executable](https://github.com/yaa110/nomino/releases) for Linux, then you should copy that executable to `/usr/bin` or add it to your `$PATH` env. Do not forget to `chmod +x nomino`.
+You can download a pre-compiled executable for Linux, MacOS and Windows operating systems, then you should copy that executable to a location from your `$PATH` env:
+
+- [Linux 64bit](https://github.com/yaa110/nomino/releases/latest/download/nomino-linux-64bit)
+- [MacOS 64bit](https://github.com/yaa110/nomino/releases/latest/download/nomino-macos-64bit)
+- [Windows 64bit](https://github.com/yaa110/nomino/releases/latest/download/nomino-windows-64bit.exe)
+
+You might run `chmod +x nomino-linux-64bit` or `chmod +x nomino-macos-64bit`.
 
 ### Arch Linux
 
@@ -20,7 +26,9 @@ The [nomino](https://aur.archlinux.org/packages/nomino)<sup>AUR</sup> package de
 
 ### Build Manually
 
-- Install rust: `curl -sSf https://sh.rustup.rs | sh`
+If you prefer to build nomino manually, or a pre-compiled executable is not provided for your target, then you can build nomino from scratch:
+
+- Install Rust: `curl -sSf https://sh.rustup.rs | sh`
 - Run `cargo install nomino`
 
 ## Usage
@@ -46,8 +54,6 @@ OPTIONS:
 ARGS:
     <OUTPUT>    Output pattern to be used for renaming files
 ```
-
-It _might_ work on Windows, MacOS and other operating systems, however, the pre-compiled executable is only tested and generated for Linux.
 
 ## Map file format
 

@@ -7,8 +7,20 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  linux:
     runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run tests
+      run: cargo test
+  macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run tests
+      run: cargo test
+  windows:
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Run tests
