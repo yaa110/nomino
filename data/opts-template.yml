@@ -49,7 +49,7 @@ args:
   - sort:
       short: s
       long: sort
-      help: Sets the order of sorting (by name) to rename files using enumerator
+      help: Sets the order of natural sorting (by name) to rename files using enumerator
       multiple: false
       takes_value: true
       case_insensitive: true

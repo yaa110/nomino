@@ -1,5 +1,6 @@
 use crate::errors::{FormatError, SourceError};
 use crate::input::{Formatter, SortOrder, Source};
+use natord;
 use regex::Regex;
 use std::error::Error;
 use std::fs;
@@ -41,9 +42,9 @@ impl InputIterator {
             }
             inputs.sort_by(|a, b| {
                 if order == SortOrder::Asc {
-                    a.to_lowercase().as_str().cmp(b.to_lowercase().as_str())
+                    natord::compare(a, b)
                 } else {
-                    b.to_lowercase().as_str().cmp(a.to_lowercase().as_str())
+                    natord::compare(b, a)
                 }
             });
             for (i, input) in inputs.into_iter().enumerate() {

@@ -51,7 +51,7 @@ OPTIONS:
     -g, --generate <PATH>    Stores a JSON map file in '<PATH>' after renaming files
     -m, --map <PATH>         Sets the path of map file to be used for renaming files
     -r, --regex <PATTERN>    Regex pattern (RE2 syntax) to match by filenames
-    -s, --sort <ORDER>       Sets the order of sorting (by name) to rename files using enumerator [possible values: ASC, DESC]
+    -s, --sort <ORDER>       Sets the order of natural sorting (by name) to rename files using enumerator [possible values: ASC, DESC]
 
 ARGS:
     <OUTPUT>    Output pattern to be used for renaming files
