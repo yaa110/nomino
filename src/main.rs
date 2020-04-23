@@ -136,7 +136,7 @@ fn run_app() -> Result<(), Box<dyn Error>> {
             serde_json::to_vec_pretty(map.as_ref().unwrap())?.as_slice(),
         )?;
     }
-    if print_map {
+    if print_map && !map.as_ref().unwrap().is_empty() {
         colored::control::set_override(atty::is(Stream::Stdout));
         print_map_table(map.unwrap())?;
     }
