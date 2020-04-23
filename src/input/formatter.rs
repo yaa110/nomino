@@ -23,11 +23,11 @@ impl Formatter {
         let mut current_padding: Option<usize> = None;
         let mut incremental_index = 1;
         for (i, ch) in format.chars().enumerate() {
-            if ch == '\\' {
+            if !should_escape && ch == '\\' {
                 should_escape = true;
                 continue;
             }
-            if should_escape && ch != '{' && ch != '}' {
+            if should_escape && ch != '{' && ch != '}' && ch != '\\' {
                 return Err(FormatError::InvalidEscapeCharacter(i, ch));
             }
             match ch {
@@ -137,6 +137,8 @@ mod tests {
     fn test_valid_formats() {
         let mut format_vars_expected = vec![
             ("{}", vec!["first", "second"], "second"),
+            (r"{1}\\{0}", vec!["first", "second"], r"second\first"),
+            (r"{1}\\\{{0}\}", vec!["first", "second"], r"second\{first}"),
             ("{}{}{3}", vec!["first", "second"], "second"),
             ("{1}", vec!["first", "second"], "second"),
             (
