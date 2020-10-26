@@ -4,7 +4,7 @@
 
 Batch rename utility for developers
 
-![Alt text](/screenshots/nomino.png?raw=true "Regex Screenshot")
+![Alt text](/screenshots/nomino1.png?raw=true "Regex Screenshot")
 
 ## How to install
 
