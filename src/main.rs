@@ -49,9 +49,10 @@ fn rename_files(
     need_map: bool,
     overwrite: bool,
     mkdir: bool,
-) -> Result<Option<Map<String, Value>>, Box<dyn Error>> {
+) -> Result<(Option<Map<String, Value>>, bool), Box<dyn Error>> {
     let mut map = if need_map { Some(Map::new()) } else { None };
     let mut is_renamed = true;
+    let mut with_err = false;
     for (input, mut output) in context {
         let mut file_path_buf;
         let mut file_path = Path::new(output.as_str());
@@ -77,14 +78,26 @@ fn rename_files(
                 .and_then(|parent| fs::create_dir_all(parent).ok());
         }
         if !test_mode {
-            is_renamed = fs::rename(input.as_str(), file_path).is_ok();
+            match fs::rename(input.as_str(), file_path) {
+                Ok(_) => is_renamed = true,
+                Err(e) => {
+                    is_renamed = false;
+                    with_err = true;
+                    eprintln!(
+                        "[{}] unable to rename '{}': {}",
+                        "error".red().bold(),
+                        input.as_str(),
+                        e.to_string()
+                    );
+                }
+            }
         }
         if is_renamed && need_map {
             map.as_mut().map(|m| m.insert(output, Value::String(input)));
         }
         is_renamed = true;
     }
-    Ok(map)
+    Ok((map, with_err))
 }
 
 fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> {
@@ -106,7 +119,7 @@ fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn run_app() -> Result<(), Box<dyn Error>> {
+fn run_app() -> Result<bool, Box<dyn Error>> {
     let opts_format = load_yaml!("opts.yml");
     let opts = App::from_yaml(opts_format).get_matches();
     if let Some(cwd) = opts.value_of("directory").map(Path::new) {
@@ -123,7 +136,7 @@ fn run_app() -> Result<(), Box<dyn Error>> {
     )?;
     let print_map = opts.is_present("print");
     let generate_map = opts.value_of("generate");
-    let map = rename_files(
+    let (map, with_err) = rename_files(
         context,
         opts.is_present("test"),
         print_map || generate_map.is_some(),
@@ -140,12 +153,18 @@ fn run_app() -> Result<(), Box<dyn Error>> {
         colored::control::set_override(atty::is(Stream::Stdout));
         print_map_table(map.unwrap())?;
     }
-    Ok(())
+    Ok(with_err)
 }
 
 fn main() {
     exit(match run_app() {
-        Ok(_) => 0,
+        Ok(with_err) => {
+            if with_err {
+                1
+            } else {
+                0
+            }
+        }
         Err(err) => {
             colored::control::set_override(atty::is(Stream::Stderr));
             eprintln!("{}: {}", "error".red().bold(), err.to_string());

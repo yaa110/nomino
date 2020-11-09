@@ -1,18 +1,18 @@
 [package]
-name = "nomino"
-version = "0.4.3"
 authors = ["Navid <yaa110@gmail.com>"]
+categories = ["command-line-utilities"]
 description = "Batch rename utility for developers"
 edition = "2018"
 homepage = "https://github.com/yaa110/nomino"
-repository = "https://github.com/yaa110/nomino"
 license = "MIT OR Apache-2.0"
-categories = ["command-line-utilities"]
+name = "nomino"
 readme = "README.md"
+repository = "https://github.com/yaa110/nomino"
+version = "0.4.4"
 
 [dependencies]
 atty = "0.2"
-clap = { version = "2.33", features = ["yaml"] }
+clap = {version = "2.33", features = ["yaml"]}
 colored = "2.0"
 natord = "1.0"
 prettytable-rs = "0.8"
@@ -25,8 +25,8 @@ assert_cmd = "1.0"
 tempdir = "0.3"
 
 [profile.release]
-debug = false
-lto = true
-debug-assertions = false
 codegen-units = 1
+debug = false
+debug-assertions = false
+lto = true
 panic = "abort"
