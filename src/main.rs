@@ -2,7 +2,7 @@ use atty::Stream;
 use clap::{load_yaml, App};
 use colored::{self, Colorize};
 use nomino::errors::SourceError;
-use nomino::input::{Context, Formatter, Source};
+use nomino::input::{Formatter, InputIterator, Source};
 use prettytable::{cell, format, row, Table};
 use serde_json::map::Map;
 use serde_json::value::Value;
@@ -44,16 +44,16 @@ fn read_output(output: Option<&str>) -> Result<Option<Formatter>, Box<dyn Error>
 }
 
 fn rename_files(
-    context: Context,
+    input_iter: InputIterator,
     test_mode: bool,
     need_map: bool,
     overwrite: bool,
     mkdir: bool,
-) -> Result<(Option<Map<String, Value>>, bool), Box<dyn Error>> {
+) -> (Option<Map<String, Value>>, bool) {
     let mut map = if need_map { Some(Map::new()) } else { None };
     let mut is_renamed = true;
     let mut with_err = false;
-    for (input, mut output) in context {
+    for (input, mut output) in input_iter {
         let mut file_path_buf;
         let mut file_path = Path::new(output.as_str());
         if !overwrite {
@@ -97,10 +97,10 @@ fn rename_files(
         }
         is_renamed = true;
     }
-    Ok((map, with_err))
+    (map, with_err)
 }
 
-fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> {
+fn print_map_table(map: Map<String, Value>) {
     let mut table = Table::new();
     table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
     table.set_titles(row!["Input".cyan(), "Output".cyan()]);
@@ -116,7 +116,6 @@ fn print_map_table(map: Map<String, Value>) -> Result<(), Box<dyn Error>> {
             }
         });
     table.printstd();
-    Ok(())
 }
 
 fn run_app() -> Result<bool, Box<dyn Error>> {
@@ -125,7 +124,7 @@ fn run_app() -> Result<bool, Box<dyn Error>> {
     if let Some(cwd) = opts.value_of("directory").map(Path::new) {
         set_current_dir(cwd)?;
     }
-    let context = Context::new(
+    let input_iter = InputIterator::new(
         read_source(
             opts.value_of("regex"),
             opts.value_of("sort"),
@@ -137,12 +136,12 @@ fn run_app() -> Result<bool, Box<dyn Error>> {
     let print_map = opts.is_present("print");
     let generate_map = opts.value_of("generate");
     let (map, with_err) = rename_files(
-        context,
+        input_iter,
         opts.is_present("test"),
         print_map || generate_map.is_some(),
         opts.is_present("overwrite"),
         opts.is_present("mkdir"),
-    )?;
+    );
     if let Some(map_file) = generate_map {
         fs::write(
             map_file,
@@ -151,7 +150,7 @@ fn run_app() -> Result<bool, Box<dyn Error>> {
     }
     if print_map && !map.as_ref().unwrap().is_empty() {
         colored::control::set_override(atty::is(Stream::Stdout));
-        print_map_table(map.unwrap())?;
+        print_map_table(map.unwrap());
     }
     Ok(with_err)
 }

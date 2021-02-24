@@ -1,6 +1,5 @@
 use crate::errors::{FormatError, SourceError};
 use crate::input::{Formatter, SortOrder, Source};
-use natord;
 use regex::Regex;
 use std::error::Error;
 use std::fs;
