@@ -13,12 +13,12 @@ use std::path::Path;
 use std::process::exit;
 
 fn read_source(
-    regex: Option<&str>,
+    regex: Option<(&str, Option<usize>)>,
     sort: Option<&str>,
     map: Option<&str>,
 ) -> Result<Source, Box<dyn Error>> {
     match (regex, sort, map) {
-        (Some(pattern), _, _) => Source::new_regex(pattern),
+        (Some((pattern, depth)), _, _) => Source::new_regex(pattern, depth),
         (_, Some(order), _) => Source::new_sort(order),
         (_, _, Some(filename)) => Source::new_map(filename),
         _ => {
@@ -124,9 +124,12 @@ fn run_app() -> Result<bool, Box<dyn Error>> {
     if let Some(cwd) = opts.value_of("directory").map(Path::new) {
         set_current_dir(cwd)?;
     }
+    let depth = opts
+        .value_of("depth")
+        .and_then(|depth| depth.parse::<usize>().ok());
     let input_iter = InputIterator::new(
         read_source(
-            opts.value_of("regex"),
+            opts.value_of("regex").map(|pattern| (pattern, depth)),
             opts.value_of("sort"),
             opts.value_of("map"),
         )?,

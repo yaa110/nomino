@@ -47,6 +47,7 @@ FLAGS:
     -V, --version      Prints version information
 
 OPTIONS:
+        --depth <DEPTH>      Optional value to overwrite inferred depth value in 'regex' mode
     -d, --dir <PATH>         Sets the working directory
     -g, --generate <PATH>    Stores a JSON map file in '<PATH>' after renaming files
     -m, --map <PATH>         Sets the path of map file to be used for renaming files

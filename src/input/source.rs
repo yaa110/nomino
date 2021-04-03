@@ -18,10 +18,10 @@ pub enum Source {
 }
 
 impl Source {
-    pub fn new_regex(pattern: &str) -> Result<Self, Box<dyn Error>> {
+    pub fn new_regex(pattern: &str, depth: Option<usize>) -> Result<Self, Box<dyn Error>> {
         Ok(Self::Regex(
             Regex::new(pattern)?,
-            pattern.chars().filter(|c| *c == MAIN_SEPARATOR).count() + 1,
+            depth.unwrap_or(pattern.chars().filter(|c| *c == MAIN_SEPARATOR).count() + 1),
         ))
     }
 

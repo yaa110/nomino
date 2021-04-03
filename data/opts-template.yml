@@ -28,6 +28,12 @@ args:
       multiple: false
       takes_value: true
       value_name: PATH
+  - depth:
+      long: depth
+      help: Optional value to overwrite inferred subdirectory depth value in 'regex' mode
+      multiple: false
+      takes_value: true
+      value_name: DEPTH
   - generate:
       short: g
       long: generate
