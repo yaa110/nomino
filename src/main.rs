@@ -1,7 +1,7 @@
 use atty::Stream;
 use clap::{load_yaml, App};
 use colored::{self, Colorize};
-use nomino::errors::SourceError;
+use nomino::errors::{SourceError, StrError};
 use nomino::input::{Formatter, InputIterator, Source};
 use prettytable::{cell, format, row, Table};
 use serde_json::map::Map;
@@ -24,10 +24,11 @@ fn read_source(
         _ => {
             colored::control::set_override(atty::is(Stream::Stderr));
             Err(Box::new(SourceError::new(format!(
-                "one of '{}', '{}' or '{}' options must be set.\n{}: run '{} {}' for more information.",
+                "one of '{}', '{}', '{}' or '{}' options must be set.\n{}: run '{} {}' for more information.",
                 "regex".cyan(),
                 "sort".cyan(),
                 "map".cyan(),
+                "SOURCE".cyan(),
                 "usage".yellow().bold(),
                 args().next().unwrap().cyan(),
                 "--help".cyan(),
@@ -130,14 +131,32 @@ fn run_app() -> Result<bool, Box<dyn Error>> {
     let max_depth = opts
         .value_of("max_depth")
         .and_then(|max_depth| max_depth.parse::<usize>().ok());
+    let regex = opts.value_of("regex");
+    let sort = opts.value_of("sort");
+    let map = opts.value_of("map");
+    let source_output = opts
+        .values_of("output")
+        .map(|values| values.collect::<Vec<&str>>());
+    if regex.or(sort).or(map).is_some()
+        && source_output
+            .as_ref()
+            .map(|values| values.len() > 1)
+            .unwrap_or(false)
+    {
+        return Err(StrError::boxed(
+            "optional SOURCE must be used without setting regex, map or sort flags",
+        ));
+    }
+    let (output, pattern) = source_output
+        .map(|mut values| (values.pop(), values.pop()))
+        .unwrap_or_default();
     let input_iter = InputIterator::new(
         read_source(
-            opts.value_of("regex")
-                .map(|pattern| (pattern, depth, max_depth)),
-            opts.value_of("sort"),
-            opts.value_of("map"),
+            regex.or(pattern).map(|pattern| (pattern, depth, max_depth)),
+            sort,
+            map,
         )?,
-        read_output(opts.value_of("output"))?,
+        read_output(output)?,
         opts.is_present("extension"),
     )?;
     let print_map = opts.is_present("print");

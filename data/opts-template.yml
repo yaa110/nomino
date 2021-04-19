@@ -2,13 +2,13 @@ name: %NAME%
 version: %VERSION%
 about: %DESCRIPTION%
 author: %REPOSITORY%
-after_help: Output pattern accepts placeholders that have the format of '{I:P}' where 'I' is the index of captured group and 'P' is the padding of digits with `0`. Please refer to %REPOSITORY% for more information.
+after_help: OUTPUT pattern accepts placeholders that have the format of '{I:P}' where 'I' is the index of captured group and 'P' is the padding of digits with `0`. Please refer to %REPOSITORY% for more information.
 
 args:
   - test:
       short: t
       long: test
-      help: Runs in test mode without renaming actual files
+      help: Runs in test mode without renaming actual files (dry-run)
   - mkdir:
       short: k
       long: mkdir
@@ -80,6 +80,6 @@ args:
       requires:
         - output
   - output:
-      help: Output pattern to be used for renaming files
-      multiple: false
-      value_name: OUTPUT
+      help: OUTPUT is the pattern to be used for renaming files, and SOURCE is the optional regex pattern to match by filenames. SOURCE has the same function as -r option
+      multiple: true
+      value_name: "[SOURCE] OUTPUT"

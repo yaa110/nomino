@@ -11,7 +11,9 @@ pub mod errors {
     mod format;
     mod sort;
     mod source;
+    mod strerr;
     pub use self::format::*;
     pub use self::sort::*;
     pub use self::source::*;
+    pub use self::strerr::*;
 }

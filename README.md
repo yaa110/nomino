@@ -4,7 +4,7 @@
 
 Batch rename utility for developers
 
-![Alt text](/screenshots/nomino.png?raw=true "Regex Screenshot")
+![Alt text](/screenshots/usage.png?raw=true "Regex Screenshot")
 
 ## How to install
 
@@ -35,7 +35,7 @@ If you prefer to build nomino manually, or a pre-compiled executable is not prov
 
 ```bash
 USAGE:
-    nomino [FLAGS] [OPTIONS] [OUTPUT]
+    nomino [FLAGS] [OPTIONS] [[SOURCE] OUTPUT]...
 
 FLAGS:
     -e, --extension    Preserves the extension of input files in 'sort' and 'regex' options
@@ -43,7 +43,7 @@ FLAGS:
     -k, --mkdir        Recursively creates all parent directories of '<OUTPUT>' if they are missing
     -w, --overwrite    Overwrites output files, otherwise, a '_' is prepended to filename
     -p, --print        Prints the map table to stdout
-    -t, --test         Runs in test mode without renaming actual files
+    -t, --test         Runs in test mode without renaming actual files (dry-run)
     -V, --version      Prints version information
 
 OPTIONS:
@@ -56,7 +56,7 @@ OPTIONS:
     -s, --sort <ORDER>         Sets the order of natural sorting (by name) to rename files using enumerator [possible values: ASC, DESC]
 
 ARGS:
-    <OUTPUT>    Output pattern to be used for renaming files
+    <[SOURCE] OUTPUT>...    OUTPUT is the pattern to be used for renaming files, and SOURCE is the optional regex pattern to match by filenames. SOURCE has the same function as -r option
 ```
 
 ## Map file format
