@@ -60,7 +60,16 @@ impl InputIterator {
             return Ok(Self::VectorIterator(map.into_iter()));
         }
 
-        if let Source::Regex(re, depth) = source {
+        if let Source::Regex(re, depth, max_depth) = source {
+            let depth = if let Some(max_depth) = max_depth {
+                if max_depth < depth {
+                    max_depth
+                } else {
+                    depth
+                }
+            } else {
+                depth
+            };
             return Ok(Self::DirectoryIterator {
                 formatter,
                 re,

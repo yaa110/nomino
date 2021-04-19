@@ -12,16 +12,21 @@ pub enum SortOrder {
 }
 
 pub enum Source {
-    Regex(Regex, usize),
+    Regex(Regex, usize, Option<usize>),
     Map(Vec<(String, String)>),
     Sort(SortOrder),
 }
 
 impl Source {
-    pub fn new_regex(pattern: &str, depth: Option<usize>) -> Result<Self, Box<dyn Error>> {
+    pub fn new_regex(
+        pattern: &str,
+        depth: Option<usize>,
+        max_depth: Option<usize>,
+    ) -> Result<Self, Box<dyn Error>> {
         Ok(Self::Regex(
             Regex::new(pattern)?,
             depth.unwrap_or(pattern.chars().filter(|c| *c == MAIN_SEPARATOR).count() + 1),
+            max_depth,
         ))
     }
 

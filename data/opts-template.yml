@@ -28,6 +28,12 @@ args:
       multiple: false
       takes_value: true
       value_name: PATH
+  - max_depth:
+      long: "max-depth"
+      help: Optional value to set the maximum of subdirectory depth value in 'regex' mode
+      multiple: false
+      takes_value: true
+      value_name: DEPTH
   - depth:
       long: depth
       help: Optional value to overwrite inferred subdirectory depth value in 'regex' mode
