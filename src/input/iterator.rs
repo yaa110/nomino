@@ -61,22 +61,14 @@ impl InputIterator {
         }
 
         if let Source::Regex(re, depth, max_depth) = source {
-            let depth = if let Some(max_depth) = max_depth {
-                if max_depth < depth {
-                    max_depth
-                } else {
-                    depth
-                }
-            } else {
-                depth
-            };
+            let max_depth = max_depth.unwrap_or(depth);
             return Ok(Self::DirectoryIterator {
                 formatter,
                 re,
                 preserve_extension,
                 iter: WalkDir::new(".")
-                    .min_depth(depth)
-                    .max_depth(depth)
+                    .min_depth(if depth > max_depth { max_depth } else { depth })
+                    .max_depth(max_depth)
                     .into_iter(),
             });
         }
