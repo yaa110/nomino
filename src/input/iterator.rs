@@ -1,7 +1,7 @@
 use crate::errors::{FormatError, SourceError};
 use crate::input::{Formatter, SortOrder, Source};
+use anyhow::Result;
 use regex::Regex;
-use std::error::Error;
 use std::fs;
 use std::iter::{IntoIterator, Iterator};
 use std::path::Path;
@@ -24,7 +24,7 @@ impl InputIterator {
         source: Source,
         formatter: Option<Formatter>,
         preserve_extension: bool,
-    ) -> Result<Self, Box<dyn Error>> {
+    ) -> Result<Self> {
         if let Source::Map(map) = source {
             return Ok(Self::VectorIterator(map.into_iter()));
         }
@@ -34,10 +34,8 @@ impl InputIterator {
         if let Source::Sort(order) = source {
             let mut map = Vec::new();
             let mut inputs = Vec::new();
-            for entry in fs::read_dir(".")? {
-                if let Ok(entry) = entry {
-                    inputs.push(entry.file_name().to_string_lossy().to_string());
-                }
+            for entry in fs::read_dir(".")?.flatten() {
+                inputs.push(entry.file_name().to_string_lossy().to_string());
             }
             inputs.sort_by(|a, b| {
                 if order == SortOrder::Asc {
@@ -73,7 +71,7 @@ impl InputIterator {
             });
         }
 
-        Err(Box::new(SourceError::new(String::from("unknown source"))))
+        Err(SourceError::new(String::from("unknown source")).into())
     }
 }
 

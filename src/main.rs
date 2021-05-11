@@ -1,13 +1,13 @@
+use anyhow::{anyhow, Result};
 use atty::Stream;
 use clap::{load_yaml, App};
 use colored::{self, Colorize};
-use nomino::errors::{SourceError, StrError};
+use nomino::errors::SourceError;
 use nomino::input::{Formatter, InputIterator, Source};
 use prettytable::{cell, format, row, Table};
 use serde_json::map::Map;
 use serde_json::value::Value;
 use std::env::{args, set_current_dir};
-use std::error::Error;
 use std::fs;
 use std::path::Path;
 use std::process::exit;
@@ -16,14 +16,14 @@ fn read_source(
     regex: Option<(&str, Option<usize>, Option<usize>)>,
     sort: Option<&str>,
     map: Option<&str>,
-) -> Result<Source, Box<dyn Error>> {
+) -> Result<Source> {
     match (regex, sort, map) {
         (Some((pattern, depth, max_depth)), _, _) => Source::new_regex(pattern, depth, max_depth),
         (_, Some(order), _) => Source::new_sort(order),
         (_, _, Some(filename)) => Source::new_map(filename),
         _ => {
             colored::control::set_override(atty::is(Stream::Stderr));
-            Err(Box::new(SourceError::new(format!(
+            Err(SourceError::new(format!(
                 "one of '{}', '{}', '{}' or '{}' options must be set.\n{}: run '{} {}' for more information.",
                 "regex".cyan(),
                 "sort".cyan(),
@@ -32,12 +32,12 @@ fn read_source(
                 "usage".yellow().bold(),
                 args().next().unwrap().cyan(),
                 "--help".cyan(),
-            ))))
+            )).into())
         }
     }
 }
 
-fn read_output(output: Option<&str>) -> Result<Option<Formatter>, Box<dyn Error>> {
+fn read_output(output: Option<&str>) -> Result<Option<Formatter>> {
     if output.is_none() {
         return Ok(None);
     }
@@ -119,7 +119,7 @@ fn print_map_table(map: Map<String, Value>) {
     table.printstd();
 }
 
-fn run_app() -> Result<bool, Box<dyn Error>> {
+fn run_app() -> Result<bool> {
     let opts_format = load_yaml!("opts.yml");
     let opts = App::from_yaml(opts_format).get_matches();
     if let Some(cwd) = opts.value_of("directory").map(Path::new) {
@@ -143,7 +143,7 @@ fn run_app() -> Result<bool, Box<dyn Error>> {
             .map(|values| values.len() > 1)
             .unwrap_or(false)
     {
-        return Err(StrError::boxed(
+        return Err(anyhow!(
             "optional SOURCE must be used without setting regex, map or sort flags",
         ));
     }
