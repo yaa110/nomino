@@ -88,7 +88,7 @@ fn rename_files(
                         "[{}] unable to rename '{}': {}",
                         "error".red().bold(),
                         input.as_str(),
-                        e.to_string()
+                        e
                     );
                 }
             }
@@ -192,7 +192,7 @@ fn main() {
         }
         Err(err) => {
             colored::control::set_override(atty::is(Stream::Stderr));
-            eprintln!("{}: {}", "error".red().bold(), err.to_string());
+            eprintln!("{}: {}", "error".red().bold(), err);
             1
         }
     });
