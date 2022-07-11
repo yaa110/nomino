@@ -22,8 +22,6 @@ You might need to run `chmod +x nomino-linux-64bit` or `chmod +x nomino-macos-64
 
 You can use [nomino](https://aur.archlinux.org/packages/nomino)<sup>AUR</sup> package to install nomino in Arch Linux.
 
-The [nomino](https://aur.archlinux.org/packages/nomino)<sup>AUR</sup> package depends on [rust](https://www.archlinux.org/packages/extra/x86_64/rust) package, if you have installed `rust` using `rustup`, then use `makepkg -dsi` to install it by ignoring dependencies.
-
 ### Build Manually
 
 If you prefer to build nomino manually, or a pre-compiled executable is not provided for your target, then you can build nomino from scratch:
