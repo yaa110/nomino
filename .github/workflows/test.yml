@@ -2,26 +2,49 @@ name: Test
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Run tests
-      run: cargo test
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          default: true
+          toolchain: stable
+          components: rustfmt, clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: -- --check
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
   macos:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Run tests
-      run: cargo test
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          default: true
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
   windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Run tests
-      run: cargo test
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          default: true
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test

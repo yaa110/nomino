@@ -1,3 +1,7 @@
+pub mod utils {
+    mod macros;
+}
+
 pub mod input {
     mod formatter;
     mod iterator;

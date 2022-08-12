@@ -3,42 +3,45 @@ name: Release
 on:
   push:
     tags:
-    - '*'
+      - "*"
 
 jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build
-        run: RUSTFLAGS='-C link-args=-s' cargo build -j`nproc` --release
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - run: cargo build --release -j`nproc`
+      - uses: actions/upload-artifact@v1
         with:
           name: linux-artifact
           path: target/release/nomino
   macos:
     runs-on: macos-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build
-        run: RUSTFLAGS='-C link-args=-s' cargo build -j`sysctl -n hw.physicalcpu` --release
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - run: cargo build --release -j`sysctl -n hw.physicalcpu`
+      - uses: actions/upload-artifact@v1
         with:
           name: macos-artifact
           path: target/release/nomino
   windows:
     runs-on: windows-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build
-        run: cargo build --release
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v1
         with:
           name: windows-artifact
           path: target\release\nomino.exe

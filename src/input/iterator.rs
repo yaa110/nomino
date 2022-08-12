@@ -1,5 +1,6 @@
 use crate::errors::{FormatError, SourceError};
 use crate::input::{Formatter, SortOrder, Source};
+use crate::{try_continue, try_continue_res};
 use anyhow::Result;
 use regex::Regex;
 use std::fs;
@@ -88,29 +89,22 @@ impl Iterator for InputIterator {
                 iter,
             } => {
                 for entry in iter {
-                    let input = if let Ok(entry) = entry {
-                        let path = entry.path();
-                        path.strip_prefix("./")
-                            .unwrap_or(path)
-                            .to_string_lossy()
-                            .to_string()
-                    } else {
-                        continue;
-                    };
-                    if let Some(cap) = re.captures(input.as_str()) {
-                        let vars: Vec<&str> = cap
-                            .iter()
-                            .map(|c| c.map(|c| c.as_str()).unwrap_or_default())
-                            .collect();
-                        let mut output = formatter.format(vars.as_slice());
-                        if *preserve_extension {
-                            if let Some(extension) = Path::new(input.as_str()).extension() {
-                                output.push('.');
-                                output.push_str(extension.to_str().unwrap_or_default());
-                            }
+                    let entry = try_continue_res!(entry);
+                    let path = entry.path();
+                    let input = path.strip_prefix("./").unwrap_or(path).to_string_lossy();
+                    let cap = try_continue!(re.captures(input.as_ref()));
+                    let vars: Vec<&str> = cap
+                        .iter()
+                        .map(|c| c.map(|c| c.as_str()).unwrap_or_default())
+                        .collect();
+                    let mut output = formatter.format(vars.as_slice());
+                    if *preserve_extension {
+                        if let Some(extension) = Path::new(input.as_ref()).extension() {
+                            output.push('.');
+                            output.push_str(extension.to_str().unwrap_or_default());
                         }
-                        return Some((input, output));
                     }
+                    return Some((input.to_string(), output));
                 }
                 None
             }
