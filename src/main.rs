@@ -4,7 +4,7 @@ use clap::{load_yaml, App};
 use colored::{self, Colorize};
 use nomino::errors::SourceError;
 use nomino::input::{Formatter, InputIterator, Source};
-use prettytable::{cell, format, row, Table};
+use prettytable::{format, row, Table};
 use serde_json::map::Map;
 use serde_json::value::Value;
 use std::env::{args, set_current_dir};
@@ -55,6 +55,10 @@ fn rename_files(
     let mut is_renamed = true;
     let mut with_err = false;
     for (input, mut output) in input_iter {
+        if input.as_str() == output.as_str() {
+            map.as_mut().map(|m| m.insert(output, Value::String(input)));
+            continue;
+        }
         let mut file_path_buf;
         let mut file_path = Path::new(output.as_str());
         if !overwrite {
@@ -183,13 +187,7 @@ fn run_app() -> Result<bool> {
 
 fn main() {
     exit(match run_app() {
-        Ok(with_err) => {
-            if with_err {
-                1
-            } else {
-                0
-            }
-        }
+        Ok(with_err) => i32::from(with_err),
         Err(err) => {
             colored::control::set_override(atty::is(Stream::Stderr));
             eprintln!("{}: {}", "error".red().bold(), err);
