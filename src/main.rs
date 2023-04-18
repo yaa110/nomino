@@ -1,7 +1,7 @@
-use anyhow::{anyhow, Result};
+use anyhow::{ensure, Result};
 use atty::Stream;
-use clap::{load_yaml, App};
 use colored::{self, Colorize};
+use nomino::cli::{Cli, Order};
 use nomino::errors::SourceError;
 use nomino::input::{Formatter, InputIterator, Source};
 use prettytable::{format, row, Table};
@@ -14,8 +14,8 @@ use std::process::exit;
 
 fn read_source(
     regex: Option<(&str, Option<usize>, Option<usize>)>,
-    sort: Option<&str>,
-    map: Option<&str>,
+    sort: Option<Order>,
+    map: Option<&Path>,
 ) -> Result<Source> {
     match (regex, sort, map) {
         (Some((pattern, depth, max_depth)), _, _) => Source::new_regex(pattern, depth, max_depth),
@@ -124,63 +124,47 @@ fn print_map_table(map: Map<String, Value>) {
 }
 
 fn run_app() -> Result<bool> {
-    let opts_format = load_yaml!("opts.yml");
-    let opts = App::from_yaml(opts_format).get_matches();
-    if let Some(cwd) = opts.value_of("directory").map(Path::new) {
+    let mut opts = Cli::parse();
+    if let Some(cwd) = opts.directory {
         set_current_dir(cwd)?;
     }
-    let depth = opts
-        .value_of("depth")
-        .and_then(|depth| depth.parse::<usize>().ok());
-    let max_depth = opts
-        .value_of("max_depth")
-        .and_then(|max_depth| max_depth.parse::<usize>().ok());
-    let regex = opts.value_of("regex");
-    let sort = opts.value_of("sort");
-    let map = opts.value_of("map");
-    let source_output = opts
-        .values_of("output")
-        .map(|values| values.collect::<Vec<&str>>());
-    if regex.or(sort).or(map).is_some()
-        && source_output
-            .as_ref()
-            .map(|values| values.len() > 1)
-            .unwrap_or(false)
-    {
-        return Err(anyhow!(
-            "optional SOURCE must be used without setting regex, map or sort flags",
-        ));
-    }
-    let (output, pattern) = source_output
-        .map(|mut values| (values.pop(), values.pop()))
-        .unwrap_or_default();
+
+    ensure!(
+        (opts.regex.is_none() && opts.sort.is_none() && opts.map.is_none())
+            || opts.output.len() <= 1,
+        "optional SOURCE must be used without setting regex, map or sort flags",
+    );
+
+    let output = opts.output.pop();
+    let pattern = opts.output.pop();
     let input_iter = InputIterator::new(
         read_source(
-            regex.or(pattern).map(|pattern| (pattern, depth, max_depth)),
-            sort,
-            map,
+            opts.regex
+                .or(pattern)
+                .as_deref()
+                .map(|pattern| (pattern, opts.depth, opts.max_depth)),
+            opts.sort,
+            opts.map.as_deref(),
         )?,
-        read_output(output)?,
-        opts.is_present("extension"),
+        read_output(output.as_deref())?,
+        opts.extension,
     )?;
-    let print_map = opts.is_present("print");
-    let generate_map = opts.value_of("generate");
     let (map, with_err) = rename_files(
         input_iter,
-        opts.is_present("test"),
-        print_map || generate_map.is_some(),
-        opts.is_present("overwrite"),
-        opts.is_present("mkdir"),
+        opts.test,
+        opts.print || opts.generate.is_some(),
+        opts.overwrite,
+        opts.mkdir,
     );
-    if let Some(map_file) = generate_map {
+    if let Some(map_file) = opts.generate {
         fs::write(
             map_file,
             serde_json::to_vec_pretty(map.as_ref().unwrap())?.as_slice(),
         )?;
     }
-    if print_map && !map.as_ref().unwrap().is_empty() {
+    if let Some(map) = map.filter(|map| opts.print && !map.is_empty()) {
         colored::control::set_override(atty::is(Stream::Stdout));
-        print_map_table(map.unwrap());
+        print_map_table(map);
     }
     Ok(with_err)
 }

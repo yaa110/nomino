@@ -1,9 +1,9 @@
-use crate::errors::SortOrderError;
+use crate::cli;
 use anyhow::Result;
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs;
-use std::path::MAIN_SEPARATOR;
+use std::path::{Path, MAIN_SEPARATOR};
 
 #[derive(PartialEq)]
 pub enum SortOrder {
@@ -30,18 +30,17 @@ impl Source {
         ))
     }
 
-    pub fn new_map(filename: &str) -> Result<Self> {
+    pub fn new_map(filename: &Path) -> Result<Self> {
         let contents = fs::read_to_string(filename)?;
         Ok(Self::Map(serde_json::from_str(contents.as_str()).map(
             |map: HashMap<String, String>| map.into_iter().collect(),
         )?))
     }
 
-    pub fn new_sort(order: &str) -> Result<Self> {
-        Ok(Self::Sort(match order.to_lowercase().as_str() {
-            "asc" => SortOrder::Asc,
-            "desc" => SortOrder::Desc,
-            _ => return Err(SortOrderError::new(order).into()),
+    pub fn new_sort(order: cli::Order) -> Result<Self> {
+        Ok(Self::Sort(match order {
+            cli::Order::Asc => SortOrder::Asc,
+            cli::Order::Desc => SortOrder::Desc,
         }))
     }
 }
