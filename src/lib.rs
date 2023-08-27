@@ -1,3 +1,5 @@
+pub mod cli;
+
 pub mod utils {
     mod macros;
 }
@@ -13,9 +15,7 @@ pub mod input {
 
 pub mod errors {
     mod format;
-    mod sort;
     mod source;
     pub use self::format::*;
-    pub use self::sort::*;
     pub use self::source::*;
 }
