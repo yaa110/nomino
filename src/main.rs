@@ -1,6 +1,6 @@
 use anyhow::{ensure, Result};
-use atty::Stream;
 use colored::{self, Colorize};
+use is_terminal::IsTerminal;
 use nomino::cli::{Cli, Order};
 use nomino::errors::SourceError;
 use nomino::input::{Formatter, InputIterator, Source};
@@ -22,7 +22,7 @@ fn read_source(
         (_, Some(order), _) => Source::new_sort(order),
         (_, _, Some(filename)) => Source::new_map(filename),
         _ => {
-            colored::control::set_override(atty::is(Stream::Stderr));
+            colored::control::set_override(std::io::stderr().is_terminal());
             Err(SourceError::new(format!(
                 "one of '{}', '{}', '{}' or '{}' options must be set.\n{}: run '{} {}' for more information.",
                 "regex".cyan(),
@@ -163,7 +163,7 @@ fn run_app() -> Result<bool> {
         )?;
     }
     if let Some(map) = map.filter(|map| opts.print && !map.is_empty()) {
-        colored::control::set_override(atty::is(Stream::Stdout));
+        colored::control::set_override(std::io::stdout().is_terminal());
         print_map_table(map);
     }
     Ok(with_err)
@@ -173,7 +173,7 @@ fn main() {
     exit(match run_app() {
         Ok(with_err) => i32::from(with_err),
         Err(err) => {
-            colored::control::set_override(atty::is(Stream::Stderr));
+            colored::control::set_override(std::io::stderr().is_terminal());
             eprintln!("{}: {}", "error".red().bold(), err);
             1
         }

@@ -1,6 +1,5 @@
 use crate::errors::{FormatError, SourceError};
 use crate::input::{Formatter, SortOrder, Source};
-use crate::{try_continue, try_continue_res};
 use anyhow::Result;
 use regex::Regex;
 use std::fs;
@@ -89,10 +88,14 @@ impl Iterator for InputIterator {
                 iter,
             } => {
                 for entry in iter {
-                    let entry = try_continue_res!(entry);
+                    let Ok(entry) = entry else {
+                        continue;
+                    };
                     let path = entry.path();
                     let input = path.strip_prefix("./").unwrap_or(path).to_string_lossy();
-                    let cap = try_continue!(re.captures(input.as_ref()));
+                    let Some(cap) = re.captures(input.as_ref()) else {
+                        continue;
+                    };
                     let vars: Vec<&str> = cap
                         .iter()
                         .map(|c| c.map(|c| c.as_str()).unwrap_or_default())

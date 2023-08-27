@@ -1,5 +1,4 @@
 use crate::errors::FormatError;
-use crate::try_continue;
 
 #[derive(Debug, PartialEq)]
 enum Segment {
@@ -106,7 +105,9 @@ impl Formatter {
         for segment in self.0.as_slice() {
             match segment {
                 Segment::PlaceHolder { padding, index } => {
-                    let var = *try_continue!(vars.get(*index));
+                    let Some(var) = vars.get(*index) else {
+                        continue;
+                    };
                     if let Some((padding, digits)) =
                         padding.zip(var.parse().map(|n: usize| n.to_string()).ok())
                     {
