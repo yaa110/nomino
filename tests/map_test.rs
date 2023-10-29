@@ -2,12 +2,11 @@ use assert_cmd::Command;
 use std::fs::read_dir;
 use std::fs::File;
 use std::io::Write;
-use tempdir::TempDir;
 
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_map() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     let inputs = vec![
         "Nomino (2020) S1.E1.1080p.mkv",

@@ -3,12 +3,11 @@ use std::fs::create_dir_all;
 use std::fs::read_dir;
 use std::fs::File;
 use std::path::MAIN_SEPARATOR;
-use tempdir::TempDir;
 
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     let inputs = vec![
         "Nomino (2020) S1.E1.1080p.mkv",
@@ -52,7 +51,7 @@ fn test_default() {
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_not_overwrite() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     let inputs = vec![
         "Nomino (2020) S1.E1.1080p.mkv",
@@ -91,7 +90,7 @@ fn test_default_not_overwrite() {
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_overwrite() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     let inputs = vec![
         "Nomino (2020) S1.E1.1080p.mkv",
@@ -136,7 +135,7 @@ fn test_default_overwrite() {
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     create_dir_all(dir.path().join("s1")).unwrap();
     create_dir_all(dir.path().join("s2")).unwrap();
@@ -195,7 +194,7 @@ fn test_default_subdir() {
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_depth() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     create_dir_all(dir.path().join("s1")).unwrap();
     create_dir_all(dir.path().join("s2")).unwrap();
@@ -256,7 +255,7 @@ fn test_default_subdir_depth() {
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_max_depth() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     create_dir_all(dir.path().join("s1")).unwrap();
     create_dir_all(dir.path().join("s2")).unwrap();
@@ -319,7 +318,7 @@ fn test_default_subdir_max_depth() {
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_not_overwrite() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     create_dir_all(dir.path().join("s1")).unwrap();
     create_dir_all(dir.path().join("s2")).unwrap();
@@ -378,7 +377,7 @@ fn test_default_subdir_not_overwrite() {
 #[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_overwrite() {
-    let dir = TempDir::new("nomino_test").unwrap();
+    let dir = tempfile::tempdir().unwrap();
 
     create_dir_all(dir.path().join("s1")).unwrap();
     create_dir_all(dir.path().join("s2")).unwrap();
