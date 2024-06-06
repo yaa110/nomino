@@ -18,10 +18,6 @@ You can download a pre-compiled executable for Linux, MacOS and Windows operatin
 
 You might need to run `chmod +x nomino-linux-64bit` or `chmod +x nomino-macos-64bit`.
 
-### Arch Linux
-
-You can use [nomino](https://aur.archlinux.org/packages/nomino)<sup>AUR</sup> package to install nomino in Arch Linux.
-
 ### Build Manually
 
 If you prefer to build nomino manually, or a pre-compiled executable is not provided for your target, then you can build nomino from scratch:
