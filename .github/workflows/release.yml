@@ -1,100 +1,71 @@
 name: Release
-
 on:
   push:
     tags:
       - "*"
-
 jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: create release
+        run: gh release create "v${{ github.ref_name }}" -t "v${{ github.ref_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   linux:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    needs: [release]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
       - run: cargo build --release -j`nproc`
-      - uses: actions/upload-artifact@v1
-        with:
-          name: linux-artifact
-          path: target/release/nomino
+      - run: |
+          mv target/release/nomino nomino-linux-64bit
+          gh release upload "v${{ github.ref_name }}" nomino-linux-64bit --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   macos:
     runs-on: macos-latest
+    permissions:
+      contents: write
+      packages: write
+    needs: [release]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
       - run: cargo build --release -j`sysctl -n hw.physicalcpu`
-      - uses: actions/upload-artifact@v1
-        with:
-          name: macos-artifact
-          path: target/release/nomino
+      - run: |
+          mv target/release/nomino nomino-macos-64bit
+          gh release upload "v${{ github.ref_name }}" nomino-macos-64bit --clobber
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   windows:
     runs-on: windows-latest
+    permissions:
+      contents: write
+      packages: write
+    needs: [release]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           default: true
       - run: cargo build --release
-      - uses: actions/upload-artifact@v1
-        with:
-          name: windows-artifact
-          path: target\release\nomino.exe
-  deploy:
-    needs: [linux, macos, windows]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create release
-        id: create_release
-        uses: actions/create-release@v1
+      - run: |
+          mv target/release/nomino.exe nomino-windows-64bit.exe
+          gh release upload "v${{ github.ref_name }}" nomino-windows-64bit.exe --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: v${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Download linux artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: linux-artifact
-      - name: Upload linux artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: linux-artifact/nomino
-          asset_name: nomino-linux-64bit
-          asset_content_type: application/octet-stream
-      - name: Download macos artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: macos-artifact
-      - name: Upload macos artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: macos-artifact/nomino
-          asset_name: nomino-macos-64bit
-          asset_content_type: application/octet-stream
-      - name: Download windows artifact
-        uses: actions/download-artifact@v1
-        with:
-          name: windows-artifact
-      - name: Upload windows artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: windows-artifact/nomino.exe
-          asset_name: nomino-windows-64bit.exe
-          asset_content_type: application/octet-stream
