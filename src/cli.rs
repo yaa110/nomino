@@ -1,6 +1,5 @@
-use std::path::PathBuf;
-
 use clap::{Parser, ValueEnum};
+use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(
@@ -46,7 +45,7 @@ pub struct Cli {
     /// Sets the order of natural sorting (by name) to rename files using enumerator.
     #[arg(short, long, value_name = "ORDER", ignore_case = true)]
     pub sort: Option<Order>,
-    /// Regex pattern (RE2 syntax) to match by filenames.
+    /// Regex pattern to match by filenames.
     #[arg(short, long, value_name = "PATTERN", requires = "output")]
     pub regex: Option<String>,
     /// OUTPUT is the pattern to be used for renaming files, and SOURCE is the optional regex pattern to match by filenames. SOURCE has the same function as -r option.

@@ -46,7 +46,7 @@ OPTIONS:
     -d, --dir <PATH>           Sets the working directory
     -g, --generate <PATH>      Stores a JSON map file in '<PATH>' after renaming files
     -m, --map <PATH>           Sets the path of map file to be used for renaming files
-    -r, --regex <PATTERN>      Regex pattern (RE2 syntax) to match by filenames
+    -r, --regex <PATTERN>      Regex pattern to match by filenames
     -s, --sort <ORDER>         Sets the order of natural sorting (by name) to rename files using enumerator [possible values: ASC, DESC]
 
 ARGS:
@@ -69,7 +69,7 @@ The output is necessary when using `--sort` or `--regex` options.
 
 ### Regex
 
-The accepted syntax of regex pattern is [RE2](https://github.com/google/re2/wiki/Syntax).
+The accepted syntax of regex pattern is [Rust Regex](https://docs.rs/regex/latest/regex/).
 
 ### Placeholders
 
