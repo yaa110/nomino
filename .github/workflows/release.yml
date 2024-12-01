@@ -23,11 +23,8 @@ jobs:
     needs: [release]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-      - run: cargo build --release -j`nproc`
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo build --release
       - run: |
           mv target/release/nomino nomino-linux-64bit
           gh release upload "v${{ github.ref_name }}" nomino-linux-64bit --clobber
@@ -41,11 +38,8 @@ jobs:
     needs: [release]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
-      - run: cargo build --release -j`sysctl -n hw.physicalcpu`
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo build --release
       - run: |
           mv target/release/nomino nomino-macos-64bit
           gh release upload "v${{ github.ref_name }}" nomino-macos-64bit --clobber
@@ -59,10 +53,7 @@ jobs:
     needs: [release]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          default: true
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
       - run: cargo build --release
       - run: |
           mv target/release/nomino.exe nomino-windows-64bit.exe

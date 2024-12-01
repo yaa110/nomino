@@ -9,6 +9,7 @@ use std::vec::IntoIter;
 use walkdir::IntoIter as WalkIter;
 use walkdir::WalkDir;
 
+#[allow(clippy::large_enum_variant)]
 pub enum InputIterator {
     VectorIterator(IntoIter<(String, String)>),
     DirectoryIterator {
