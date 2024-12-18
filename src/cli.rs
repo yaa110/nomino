@@ -12,8 +12,8 @@ use std::path::PathBuf;
     next_display_order = None,
 )]
 pub struct Cli {
-    /// Runs in test mode without renaming actual files (dry-run).
-    #[arg(short, long)]
+    /// Runs in test mode without renaming actual files
+    #[arg(short, long, visible_alias="dry-run")]
     pub test: bool,
     /// Recursively creates all parent directories of '<OUTPUT>' if they are missing.
     #[arg(short = 'k', long)]
