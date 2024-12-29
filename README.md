@@ -37,7 +37,8 @@ FLAGS:
     -k, --mkdir        Recursively creates all parent directories of '<OUTPUT>' if they are missing
     -w, --overwrite    Overwrites output files, otherwise, a '_' is prepended to filename
     -p, --print        Prints the map table to stdout
-    -t, --test         Runs in test mode without renaming actual files (dry-run)
+    -t, --test         Runs in test mode without renaming actual files [aliases: dry-run]
+        --dry-run      Alias for --test
     -V, --version      Prints version information
 
 OPTIONS:
