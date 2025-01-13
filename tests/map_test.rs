@@ -51,6 +51,7 @@ fn test_map() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-m",
@@ -74,7 +75,7 @@ fn test_map() {
 
     let cmd_undo = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
-        .args(&["-d", dir.path().to_str().unwrap(), "-m", "undo.json"])
+        .args(&["-E", "-d", dir.path().to_str().unwrap(), "-m", "undo.json"])
         .unwrap();
 
     let mut files_undo: Vec<String> = read_dir(dir.path())

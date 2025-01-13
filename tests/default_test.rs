@@ -26,6 +26,7 @@ fn test_default() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             r".*E(\d+).*",
@@ -69,7 +70,13 @@ fn test_default_not_overwrite() {
 
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
-        .args(&["-d", dir.path().to_str().unwrap(), r".*E(\d+).*", "1.mkv"])
+        .args(&[
+            "-E",
+            "-d",
+            dir.path().to_str().unwrap(),
+            r".*E(\d+).*",
+            "1.mkv",
+        ])
         .unwrap();
 
     let mut files: Vec<String> = read_dir(dir.path())
@@ -109,6 +116,7 @@ fn test_default_overwrite() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-w",
@@ -159,6 +167,7 @@ fn test_default_subdir() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-k",
@@ -218,6 +227,7 @@ fn test_default_subdir_depth() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "--depth",
             "2",
             "-d",
@@ -279,6 +289,7 @@ fn test_default_subdir_max_depth() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "--depth",
             "3",
             "--max-depth",
@@ -342,6 +353,7 @@ fn test_default_subdir_not_overwrite() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-k",
@@ -401,6 +413,7 @@ fn test_default_subdir_overwrite() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-k",

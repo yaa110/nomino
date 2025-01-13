@@ -108,15 +108,15 @@ fn rename_files(
 fn print_map_table(map: Map<String, Value>) {
     let mut table = Table::new();
     table.set_format(*format::consts::FORMAT_NO_LINESEP_WITH_TITLE);
-    table.set_titles(row!["Input".cyan(), "Output".cyan()]);
+    table.set_titles(row![Fc => "Input", "Output"]);
     map.into_iter()
         .enumerate()
         .for_each(|(i, (output, input))| {
             if let Value::String(input) = input {
                 if i % 2 == 0 {
-                    table.add_row(row![input.as_str(), output.as_str()]);
+                    table.add_row(row![input.as_str().normal(), output.as_str().normal()]);
                 } else {
-                    table.add_row(row![input.as_str().purple(), output.as_str().purple()]);
+                    table.add_row(row![Fm => input.as_str(), output.as_str()]);
                 }
             }
         });
@@ -147,12 +147,12 @@ fn run_app() -> Result<bool> {
             opts.map.as_deref(),
         )?,
         read_output(output.as_deref())?,
-        opts.extension,
+        !opts.no_extension,
     )?;
     let (map, with_err) = rename_files(
         input_iter,
         opts.test,
-        opts.print || opts.generate.is_some(),
+        !opts.quiet || opts.generate.is_some(),
         opts.overwrite,
         opts.mkdir,
     );
@@ -162,7 +162,7 @@ fn run_app() -> Result<bool> {
             serde_json::to_vec_pretty(map.as_ref().unwrap())?.as_slice(),
         )?;
     }
-    if let Some(map) = map.filter(|map| opts.print && !map.is_empty()) {
+    if let Some(map) = map.filter(|map| !opts.quiet && !map.is_empty()) {
         colored::control::set_override(std::io::stdout().is_terminal());
         print_map_table(map);
     }

@@ -21,9 +21,9 @@ pub struct Cli {
     /// Overwrites output files, otherwise, a '_' is prepended to filename.
     #[arg(short = 'w', long)]
     pub overwrite: bool,
-    /// Preserves the extension of input files in 'sort' and 'regex' options.
-    #[arg(short, long)]
-    pub extension: bool,
+    /// Does not preserve the extension of input files in 'sort' and 'regex' options.
+    #[arg(short = 'E', long = "no-extension")]
+    pub no_extension: bool,
     /// Sets the working directory.
     #[arg(short, long = "dir", value_name = "PATH")]
     pub directory: Option<PathBuf>,
@@ -36,11 +36,11 @@ pub struct Cli {
     /// Stores a JSON map file in '<PATH>' after renaming files.
     #[arg(short, long, value_name = "PATH")]
     pub generate: Option<PathBuf>,
-    /// Prints the map table to stdout.
+    /// Does not print the map table to stdout.
     #[arg(short, long)]
-    pub print: bool,
+    pub quiet: bool,
     /// Sets the path of map file to be used for renaming files.
-    #[arg(short, long, value_name = "PATH")]
+    #[arg(short, long, value_name = "PATH", visible_alias = "from-file")]
     pub map: Option<PathBuf>,
     /// Sets the order of natural sorting (by name) to rename files using enumerator.
     #[arg(short, long, value_name = "ORDER", ignore_case = true)]

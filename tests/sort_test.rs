@@ -23,7 +23,14 @@ fn test_sort() {
 
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
-        .args(&["-d", dir.path().to_str().unwrap(), "-s", "asc", "{:3}.mkv"])
+        .args(&[
+            "-E",
+            "-d",
+            dir.path().to_str().unwrap(),
+            "-s",
+            "asc",
+            "{:3}.mkv",
+        ])
         .unwrap();
 
     let mut files: Vec<String> = read_dir(dir.path())

@@ -4,7 +4,7 @@
 
 Batch rename utility for developers
 
-![Alt text](/screenshots/usage.png?raw=true "Regex Screenshot")
+![Alt text](/screenshots/regex.png?raw=true "Example Screenshot")
 
 ## How to install
 
@@ -28,30 +28,35 @@ If you prefer to build nomino manually, or a pre-compiled executable is not prov
 ## Usage
 
 ```bash
-USAGE:
-    nomino [FLAGS] [OPTIONS] [[SOURCE] OUTPUT]...
+Usage:
+    nomino [OPTIONS] [[SOURCE] OUTPUT]...
 
-FLAGS:
-    -e, --extension    Preserves the extension of input files in 'sort' and 'regex' options
-    -h, --help         Prints help information
-    -k, --mkdir        Recursively creates all parent directories of '<OUTPUT>' if they are missing
-    -w, --overwrite    Overwrites output files, otherwise, a '_' is prepended to filename
-    -p, --print        Prints the map table to stdout
-    -t, --test         Runs in test mode without renaming actual files [aliases: dry-run]
-        --dry-run      Alias for --test
-    -V, --version      Prints version information
+Arguments:
+  [[SOURCE] OUTPUT]...
+          OUTPUT is the pattern to be used for renaming files, and SOURCE is the optional regex pattern to match by filenames. SOURCE has the same function as -r option
 
-OPTIONS:
-        --depth <DEPTH>        Optional value to overwrite inferred subdirectory depth value in 'regex' mode
-        --max-depth <DEPTH>    Optional value to set the maximum of subdirectory depth value in 'regex' mode
-    -d, --dir <PATH>           Sets the working directory
-    -g, --generate <PATH>      Stores a JSON map file in '<PATH>' after renaming files
-    -m, --map <PATH>           Sets the path of map file to be used for renaming files
-    -r, --regex <PATTERN>      Regex pattern to match by filenames
-    -s, --sort <ORDER>         Sets the order of natural sorting (by name) to rename files using enumerator [possible values: ASC, DESC]
+Options:
+  -d, --dir <PATH>          Sets the working directory
+      --depth <DEPTH>       Optional value to overwrite inferred subdirectory depth value in 'regex' mode
+  -E, --no-extension        Does not preserve the extension of input files in 'sort' and 'regex' options
+  -g, --generate <PATH>     Stores a JSON map file in '<PATH>' after renaming files
+  -h, --help                Print help (see a summary with '-h')
+  -k, --mkdir               Recursively creates all parent directories of '<OUTPUT>' if they are missing
+  -m, --map <PATH>          Sets the path of map file to be used for renaming files
+      --from-file <PATH>    Alias for --map
+      --max-depth <DEPTH>   Optional value to set the maximum of subdirectory depth value in 'regex' mode
+  -q, --quiet               Does not print the map table to stdout
+  -r, --regex <PATTERN>     Regex pattern to match by filenames
+  -s, --sort <ORDER>        Sets the order of natural sorting (by name) to rename files using enumerator
+                                Possible ORDER values:
+                                - asc:  Sort in ascending order
+                                - desc: Sort in descending order
+  -t, --test                Runs in test mode without renaming actual files
+      --dry-run             Alias for --test
+  -V, --version             Print version
+  -w, --overwrite           Overwrites output files, otherwise, a '_' is prepended to filename
 
-ARGS:
-    <[SOURCE] OUTPUT>...    OUTPUT is the pattern to be used for renaming files, and SOURCE is the optional regex pattern to match by filenames. SOURCE has the same function as -r option
+OUTPUT pattern accepts placeholders that have the format of '{I:P}' where 'I' is the index of captured group and 'P' is the padding of digits with `0`. Please refer to https://github.com/yaa110/nomino for more information.
 ```
 
 ## Map file format

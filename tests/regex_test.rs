@@ -26,6 +26,7 @@ fn test_regex() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-r",
@@ -71,6 +72,7 @@ fn test_regex_not_overwrite() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-r",
@@ -116,6 +118,7 @@ fn test_regex_overwrite() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-w",
@@ -167,6 +170,7 @@ fn test_regex_subdir() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-k",
@@ -227,6 +231,7 @@ fn test_regex_subdir_depth() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "--depth",
             "2",
             "-d",
@@ -289,6 +294,7 @@ fn test_regex_subdir_max_depth() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "--depth",
             "3",
             "--max-depth",
@@ -353,6 +359,7 @@ fn test_regex_subdir_not_overwrite() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-k",
@@ -413,6 +420,7 @@ fn test_regex_subdir_overwrite() {
     let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
         .unwrap()
         .args(&[
+            "-E",
             "-d",
             dir.path().to_str().unwrap(),
             "-k",
