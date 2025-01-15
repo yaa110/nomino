@@ -3,7 +3,6 @@ use std::fs::read_dir;
 use std::fs::File;
 use std::io::Write;
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_map() {
     let dir = tempfile::tempdir().unwrap();

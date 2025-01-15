@@ -1,9 +1,10 @@
 use crate::cli;
+use crate::input::MAIN_SEPARATOR;
 use anyhow::Result;
 use regex::Regex;
 use std::collections::HashMap;
 use std::fs;
-use std::path::{Path, MAIN_SEPARATOR};
+use std::path::Path;
 
 #[derive(PartialEq)]
 pub enum SortOrder {
@@ -25,7 +26,7 @@ impl Source {
     ) -> Result<Self> {
         Ok(Self::Regex(
             Regex::new(pattern)?,
-            depth.unwrap_or(pattern.chars().filter(|c| *c == MAIN_SEPARATOR).count() + 1),
+            depth.unwrap_or(pattern.matches(MAIN_SEPARATOR).count() + 1),
             max_depth,
         ))
     }

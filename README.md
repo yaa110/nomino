@@ -59,6 +59,10 @@ Options:
 OUTPUT pattern accepts placeholders that have the format of '{I:P}' where 'I' is the index of captured group and 'P' is the padding of digits with `0`. Please refer to https://github.com/yaa110/nomino for more information.
 ```
 
+### Windows
+
+On Windows, `\\` must be used to separate path components in file paths because `\` is a special character in regular expressions.
+
 ## Map file format
 
 ```json
