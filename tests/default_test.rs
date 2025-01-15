@@ -1,10 +1,9 @@
 use assert_cmd::Command;
+use nomino::input::MAIN_SEPARATOR;
 use std::fs::create_dir_all;
 use std::fs::read_dir;
 use std::fs::File;
-use std::path::MAIN_SEPARATOR;
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default() {
     let dir = tempfile::tempdir().unwrap();
@@ -49,7 +48,6 @@ fn test_default() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_not_overwrite() {
     let dir = tempfile::tempdir().unwrap();
@@ -94,7 +92,6 @@ fn test_default_not_overwrite() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_overwrite() {
     let dir = tempfile::tempdir().unwrap();
@@ -140,7 +137,6 @@ fn test_default_overwrite() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir() {
     let dir = tempfile::tempdir().unwrap();
@@ -200,7 +196,6 @@ fn test_default_subdir() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_depth() {
     let dir = tempfile::tempdir().unwrap();
@@ -262,7 +257,6 @@ fn test_default_subdir_depth() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_max_depth() {
     let dir = tempfile::tempdir().unwrap();
@@ -326,7 +320,6 @@ fn test_default_subdir_max_depth() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_not_overwrite() {
     let dir = tempfile::tempdir().unwrap();
@@ -386,7 +379,6 @@ fn test_default_subdir_not_overwrite() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_default_subdir_overwrite() {
     let dir = tempfile::tempdir().unwrap();
