@@ -2,7 +2,6 @@ use assert_cmd::Command;
 use std::fs::read_dir;
 use std::fs::File;
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_sort() {
     let dir = tempfile::tempdir().unwrap();

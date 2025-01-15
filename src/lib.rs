@@ -3,9 +3,11 @@ pub mod cli;
 pub mod input {
     mod formatter;
     mod iterator;
+    mod separator;
     mod source;
     pub use self::formatter::*;
     pub use self::iterator::*;
+    pub use self::separator::*;
     pub use self::source::*;
 }
 

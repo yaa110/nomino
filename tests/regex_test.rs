@@ -1,10 +1,9 @@
 use assert_cmd::Command;
+use nomino::input::MAIN_SEPARATOR;
 use std::fs::create_dir_all;
 use std::fs::read_dir;
 use std::fs::File;
-use std::path::MAIN_SEPARATOR;
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex() {
     let dir = tempfile::tempdir().unwrap();
@@ -50,7 +49,6 @@ fn test_regex() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex_not_overwrite() {
     let dir = tempfile::tempdir().unwrap();
@@ -96,7 +94,6 @@ fn test_regex_not_overwrite() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex_overwrite() {
     let dir = tempfile::tempdir().unwrap();
@@ -143,7 +140,6 @@ fn test_regex_overwrite() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex_subdir() {
     let dir = tempfile::tempdir().unwrap();
@@ -204,7 +200,6 @@ fn test_regex_subdir() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex_subdir_depth() {
     let dir = tempfile::tempdir().unwrap();
@@ -267,7 +262,6 @@ fn test_regex_subdir_depth() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex_subdir_max_depth() {
     let dir = tempfile::tempdir().unwrap();
@@ -332,7 +326,6 @@ fn test_regex_subdir_max_depth() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex_subdir_not_overwrite() {
     let dir = tempfile::tempdir().unwrap();
@@ -393,7 +386,6 @@ fn test_regex_subdir_not_overwrite() {
     dir.close().unwrap();
 }
 
-#[cfg(not(target_os = "windows"))]
 #[test]
 fn test_regex_subdir_overwrite() {
     let dir = tempfile::tempdir().unwrap();
