@@ -325,7 +325,7 @@ checksum = "308d96db8debc727c3fd9744aac51751243420e46edf401010908da7f8d5e57c"
 
 [[package]]
 name = "nomino"
-version = "1.5.2"
+version = "1.6.0"
 dependencies = [
  "anyhow",
  "assert_cmd",

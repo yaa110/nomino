@@ -56,8 +56,36 @@ Options:
   -V, --version             Print version
   -w, --overwrite           Overwrites output files, otherwise, a '_' is prepended to filename
 
-OUTPUT pattern accepts placeholders that have the format of '{I:P}' where 'I' is the index of captured group and 'P' is the padding of digits with `0`. Please refer to https://github.com/yaa110/nomino for more information.
+OUTPUT pattern accepts placeholders that have the format of '{G:P}' where 'G' is the captured group and 'P' is the padding of digits with `0`. Please refer to https://github.com/yaa110/nomino for more information.
 ```
+
+### Placeholders
+
+1. Placeholders have the format of `{G:P}` where `G` is the captured group and `P` is the padding of digits with `0`. For example, `{2:3}` means the third captured group with a padding of 3, i.e. `1` is formatted as `001`.
+1. Indices start from `0`, and `{0}` means the filename.
+1. The capture group `G` could be dropped, i.e. `{}` or `{:3}`. In this case an auto incremental index is used which starts from `1`. For example, `{} {}` equals `{1} {2}`.
+1. `{` and `}` characters could be escaped using `\` character, i.e. `\\{` and `\\}` in cli.
+1. Padding is only used for positive numbers, e.g. the formatted result of `{:3}` for `1` is `001`, for `-1` is `-1` and for `a` is `a`.
+1. If `--sort` option is used, the first index `{0}` is the filename and the second index `{1}` or first occurrence of `{}` is the enumerator index.
+
+### Capture Groups
+
+The accepted syntax of regex pattern is [Rust Regex](https://docs.rs/regex/latest/regex/).
+
+Consider this example:
+
+```regex
+(?<first>\w)(\w)\w(?<last>\w)
+```
+
+This regular expression defines 4 capture groups:
+
+- The group at index `0` corresponds to the overall match. It is always present in every match and never has a name: `{0}`.
+- The group at index `1` with name `first` corresponding to the first letter: `{1}`, `{first}` or the first occurrence of `{}`.
+- The group at index `2` with no name corresponding to the second letter: `{2}` or the second occurrence of `{}`.
+- The group at index `3` with name `last` corresponding to the fourth and last letter: `{3}`, `{last}` or the third occurrence of `{}`.
+
+`?<first>` and `?<last>` are named capture groups.
 
 ### Windows
 
@@ -72,23 +100,6 @@ On Windows, `\\` must be used to separate path components in file paths because 
     "<...>": "<...>"
 }
 ```
-
-## Output
-
-The output is necessary when using `--sort` or `--regex` options.
-
-### Regex
-
-The accepted syntax of regex pattern is [Rust Regex](https://docs.rs/regex/latest/regex/).
-
-### Placeholders
-
-1. Placeholders have the format of `{I:P}` where `I` is the index of captured group and `P` is the padding of digits with `0`. For example, `{2:3}` means the third captured group with a padding of 3, i.e. `1` is formatted as `001`.
-1. Indices start from `0`, and `{0}` means the filename.
-1. The index `I` could be dropped, i.e. `{}` or `{:3}`. In this case an auto incremental index is used which starts from `1`. For example, `{} {}` equals `{1} {2}`.
-1. `{` and `}` characters could be escaped using `\` character, i.e. `\\{` and `\\}` in cli.
-1. Padding is only used for positive numbers, e.g. the formatted result of `{:3}` for `1` is `001`, for `-1` is `-1` and for `a` is `a`.
-1. If `--sort` option is used, the first index `{0}` is the filename and the second index `{1}` or first occurrence of `{}` is the enumerator index.
 
 ## Wiki
 
