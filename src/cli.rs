@@ -6,8 +6,8 @@ use std::path::PathBuf;
     about,
     author,
     version,
-    after_help = "OUTPUT pattern accepts placeholders that have the format of '{I:P}' where 'I' \
-    is the index of captured group and 'P' is the padding of digits with `0`. Please refer to \
+    after_help = "OUTPUT pattern accepts placeholders that have the format of '{G:P}' where 'G' \
+    is the captured group and 'P' is the padding of digits with `0`. Please refer to \
     https://github.com/yaa110/nomino for more information.",
     next_display_order = None,
 )]

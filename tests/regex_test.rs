@@ -50,6 +50,51 @@ fn test_regex() {
 }
 
 #[test]
+fn test_named_regex() {
+    let dir = tempfile::tempdir().unwrap();
+
+    let inputs = vec![
+        "Nomino (2020) S1.E1.1080p.mkv",
+        "Nomino (2020) S1.E2.1080p.mkv",
+        "Nomino (2020) S1.E3.1080p.mkv",
+        "Nomino (2020) S1.E4.1080p.mkv",
+        "Nomino (2020) S1.E5.1080p.mkv",
+    ];
+
+    let mut outputs = vec!["01.mkv", "02.mkv", "03.mkv", "04.mkv", "05.mkv"];
+
+    for input in inputs {
+        let _ = File::create(dir.path().join(input)).unwrap();
+    }
+
+    let cmd = Command::cargo_bin(env!("CARGO_PKG_NAME"))
+        .unwrap()
+        .args(&[
+            "-E",
+            "-d",
+            dir.path().to_str().unwrap(),
+            "-r",
+            r".*E(?<episode>\d+).*",
+            "{episode:2}.mkv",
+        ])
+        .unwrap();
+
+    let mut files: Vec<String> = read_dir(dir.path())
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_str().unwrap().to_string())
+        .collect();
+
+    files.sort();
+    outputs.sort();
+
+    assert!(cmd.status.success());
+    assert_eq!(files.len(), outputs.len());
+    assert!(outputs.iter().zip(files.iter()).all(|(a, b)| a == b));
+
+    dir.close().unwrap();
+}
+
+#[test]
 fn test_regex_not_overwrite() {
     let dir = tempfile::tempdir().unwrap();
 

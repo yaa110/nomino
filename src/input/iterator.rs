@@ -47,7 +47,7 @@ impl InputIterator {
             });
             for (i, input) in inputs.into_iter().enumerate() {
                 let index = (i + 1).to_string();
-                let mut output = formatter.format(vec![input.as_str(), index.as_str()].as_slice());
+                let mut output = formatter.format(vec![input.as_str(), index.as_str()]);
                 if preserve_extension {
                     if let Some(extension) = Path::new(input.as_str()).extension() {
                         output.push('.');
@@ -94,14 +94,10 @@ impl Iterator for InputIterator {
                     };
                     let path = entry.path();
                     let input = path.strip_prefix("./").unwrap_or(path).to_string_lossy();
-                    let Some(cap) = re.captures(input.as_ref()) else {
+                    let Some(captures) = re.captures(input.as_ref()) else {
                         continue;
                     };
-                    let vars: Vec<&str> = cap
-                        .iter()
-                        .map(|c| c.map(|c| c.as_str()).unwrap_or_default())
-                        .collect();
-                    let mut output = formatter.format(vars.as_slice());
+                    let mut output = formatter.format(captures);
                     if *preserve_extension {
                         if let Some(extension) = Path::new(input.as_ref()).extension() {
                             output.push('.');

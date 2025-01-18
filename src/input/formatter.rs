@@ -1,10 +1,11 @@
+use super::{provider::Capture, Provider};
 use crate::errors::FormatError;
 
 #[derive(Debug, PartialEq)]
 enum Segment {
     PlaceHolder {
         padding: Option<usize>,
-        index: usize,
+        capture: Capture,
     },
     String(String),
 }
@@ -16,12 +17,12 @@ impl Formatter {
     pub fn new(format: &str) -> Result<Self, FormatError> {
         let mut segments = Vec::new();
         let mut should_escape = false;
-        let mut is_parsing_index = false;
+        let mut is_parsing_capture = false;
         let mut is_parsing_padding = false;
         let mut current_segment = String::new();
-        let mut current_index: usize = 0;
+        let mut current_capture = Capture::Index(0);
         let mut current_padding: Option<usize> = None;
-        let mut incremental_index = 1;
+        let mut incremental_index: usize = 1;
         for (i, ch) in format.chars().enumerate() {
             if !should_escape && ch == '\\' {
                 should_escape = true;
@@ -31,29 +32,26 @@ impl Formatter {
                 return Err(FormatError::InvalidEscapeCharacter(i, ch));
             }
             match ch {
-                '{' if !should_escape && !is_parsing_index && !is_parsing_padding => {
+                '{' if !should_escape && !is_parsing_capture && !is_parsing_padding => {
                     if !current_segment.is_empty() {
                         segments.push(Segment::String(current_segment));
                         current_segment = String::new();
                     }
-                    is_parsing_index = true;
+                    is_parsing_capture = true;
                 }
                 '}' if !should_escape => {
-                    if !is_parsing_index && !is_parsing_padding {
+                    if !is_parsing_capture && !is_parsing_padding {
                         return Err(FormatError::UnopenedPlaceholder);
                     }
                     if current_segment.is_empty() {
-                        if is_parsing_index {
-                            current_index = incremental_index;
+                        if is_parsing_capture {
+                            current_capture = Capture::Index(incremental_index);
                             incremental_index += 1;
                         } else if is_parsing_padding {
                             current_padding = None;
                         }
-                    } else if is_parsing_index {
-                        current_index = current_segment
-                            .as_str()
-                            .parse()
-                            .map_err(|_| FormatError::InvalidIndex(current_segment.clone()))?;
+                    } else if is_parsing_capture {
+                        current_capture = current_segment.as_str().into();
                         current_padding = None;
                     } else if is_parsing_padding {
                         current_padding =
@@ -63,25 +61,22 @@ impl Formatter {
                     }
                     segments.push(Segment::PlaceHolder {
                         padding: current_padding,
-                        index: current_index,
+                        capture: current_capture,
                     });
                     current_segment.clear();
                     current_padding = None;
-                    current_index = 0;
-                    is_parsing_index = false;
+                    current_capture = Capture::Index(0);
+                    is_parsing_capture = false;
                     is_parsing_padding = false;
                 }
-                ':' if is_parsing_index => {
-                    is_parsing_index = false;
+                ':' if is_parsing_capture => {
+                    is_parsing_capture = false;
                     is_parsing_padding = true;
                     if current_segment.is_empty() {
-                        current_index = incremental_index;
+                        current_capture = Capture::Index(incremental_index);
                         incremental_index += 1;
                     } else {
-                        current_index = current_segment
-                            .as_str()
-                            .parse()
-                            .map_err(|_| FormatError::InvalidIndex(current_segment.clone()))?;
+                        current_capture = current_segment.as_str().into();
                         current_segment.clear();
                     }
                 }
@@ -91,7 +86,7 @@ impl Formatter {
                 }
             }
         }
-        if is_parsing_index || is_parsing_padding {
+        if is_parsing_capture || is_parsing_padding {
             return Err(FormatError::UnclosedPlaceholder);
         }
         if !current_segment.is_empty() {
@@ -100,12 +95,12 @@ impl Formatter {
         Ok(Self(segments))
     }
 
-    pub fn format(&self, vars: &[&str]) -> String {
+    pub fn format(&self, provider: impl Provider) -> String {
         let mut formatted = String::new();
         for segment in self.0.as_slice() {
             match segment {
-                Segment::PlaceHolder { padding, index } => {
-                    let Some(var) = vars.get(*index) else {
+                Segment::PlaceHolder { padding, capture } => {
+                    let Some(var) = provider.provide(capture) else {
                         continue;
                     };
                     if let Some((padding, digits)) =
@@ -187,7 +182,7 @@ mod tests {
         while let Some((format, vars, expected)) = format_vars_expected.pop() {
             let output = Formatter::new(format)
                 .expect(format!("unable to parse format '{}'", format).as_str());
-            let actual = output.format(vars.as_slice());
+            let actual = output.format(vars);
             assert_eq!(actual, expected);
         }
     }
@@ -200,8 +195,6 @@ mod tests {
             ("2:5}", FormatError::UnopenedPlaceholder),
             (r"\{2:5}", FormatError::UnopenedPlaceholder),
             (r"{2:5\}", FormatError::UnclosedPlaceholder),
-            ("{{2:5}}", FormatError::InvalidIndex("{2".to_string())),
-            ("{a}", FormatError::InvalidIndex("a".to_string())),
             ("{2:5a}", FormatError::InvalidPadding("5a".to_string())),
             ("init {2:5", FormatError::UnclosedPlaceholder),
             ("init {2:5 end", FormatError::UnclosedPlaceholder),
