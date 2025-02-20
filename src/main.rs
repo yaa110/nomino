@@ -1,10 +1,10 @@
-use anyhow::{ensure, Result};
+use anyhow::{Result, ensure};
 use colored::{self, Colorize};
 use is_terminal::IsTerminal;
 use nomino::cli::{Cli, Order};
 use nomino::errors::SourceError;
 use nomino::input::{Formatter, InputIterator, Source};
-use prettytable::{format, row, Table};
+use prettytable::{Table, format, row};
 use serde_json::map::Map;
 use serde_json::value::Value;
 use std::env::{args, set_current_dir};

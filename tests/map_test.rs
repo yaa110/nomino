@@ -1,6 +1,6 @@
 use assert_cmd::Command;
-use std::fs::read_dir;
 use std::fs::File;
+use std::fs::read_dir;
 use std::io::Write;
 
 #[test]
@@ -87,10 +87,12 @@ fn test_map() {
 
     assert!(cmd_undo.status.success());
     assert_eq!(files_undo.len(), outputs.len());
-    assert!(outputs_undo
-        .iter()
-        .zip(files_undo.iter())
-        .all(|(a, b)| a == b));
+    assert!(
+        outputs_undo
+            .iter()
+            .zip(files_undo.iter())
+            .all(|(a, b)| a == b)
+    );
 
     dir.close().unwrap();
 }

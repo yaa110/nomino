@@ -1,4 +1,4 @@
-use super::{provider::Capture, Provider};
+use super::{Provider, provider::Capture};
 use crate::errors::FormatError;
 
 #[derive(Debug, PartialEq)]
@@ -115,7 +115,7 @@ impl Formatter {
                     }
                     formatted.push_str(var);
                 }
-                Segment::String(ref string) => formatted.push_str(string),
+                Segment::String(string) => formatted.push_str(string),
             }
         }
         formatted

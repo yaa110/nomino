@@ -1,6 +1,6 @@
 use assert_cmd::Command;
-use std::fs::read_dir;
 use std::fs::File;
+use std::fs::read_dir;
 
 #[test]
 fn test_sort() {

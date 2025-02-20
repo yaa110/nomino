@@ -2,13 +2,13 @@
 authors = ["Navid <yaa110@gmail.com>"]
 categories = ["command-line-utilities"]
 description = "Batch rename utility for developers"
-edition = "2021"
+edition = "2024"
 homepage = "https://github.com/yaa110/nomino"
 license = "MIT OR Apache-2.0"
 name = "nomino"
 readme = "README.md"
 repository = "https://github.com/yaa110/nomino"
-version = "1.6.0"
+version = "1.6.1"
 
 [dependencies]
 anyhow = "1.0"

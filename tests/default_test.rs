@@ -1,8 +1,8 @@
 use assert_cmd::Command;
 use nomino::input::MAIN_SEPARATOR;
+use std::fs::File;
 use std::fs::create_dir_all;
 use std::fs::read_dir;
-use std::fs::File;
 
 #[test]
 fn test_default() {
