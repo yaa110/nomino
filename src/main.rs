@@ -100,7 +100,7 @@ fn rename_files(
         if is_renamed && need_map {
             map.as_mut().map(|m| m.insert(output, Value::String(input)));
         }
-        is_renamed = true;
+        is_renamed = false;
     }
     (map, with_err)
 }
