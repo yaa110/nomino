@@ -16,8 +16,7 @@ impl fmt::Display for FormatError {
         match self {
             FormatError::InvalidEscapeCharacter(pos, ch) => write!(
                 f,
-                "[output-format] invalid escape character of '{}' at '{}'",
-                ch, pos
+                "[output-format] invalid escape character of '{ch}' at '{pos}'",
             ),
             FormatError::UnclosedPlaceholder => write!(
                 f,
@@ -28,13 +27,11 @@ impl fmt::Display for FormatError {
                 "[output-format] an unopened placeholder could not be closed by '}}'"
             ),
             FormatError::InvalidIndex(index) => {
-                write!(f, "[output-format] unable to parse index of '{}'", index)
+                write!(f, "[output-format] unable to parse index of '{index}'")
             }
-            FormatError::InvalidPadding(padding) => write!(
-                f,
-                "[output-format] unable to parse padding of '{}'",
-                padding
-            ),
+            FormatError::InvalidPadding(padding) => {
+                write!(f, "[output-format] unable to parse padding of '{padding}'",)
+            }
             FormatError::EmptyFormatter => {
                 write!(f, "[output-format] output formatter must be set")
             }
