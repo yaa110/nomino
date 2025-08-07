@@ -9,7 +9,7 @@ name = "nomino"
 readme = "README.md"
 repository = "https://github.com/yaa110/nomino"
 rust-version = "1.88"
-version = "1.6.3"
+version = "1.6.4"
 
 [dependencies]
 anyhow = "1.0"
