@@ -8,7 +8,7 @@ license = "MIT OR Apache-2.0"
 name = "nomino"
 readme = "README.md"
 repository = "https://github.com/yaa110/nomino"
-version = "1.6.2"
+version = "1.6.3"
 
 [dependencies]
 anyhow = "1.0"

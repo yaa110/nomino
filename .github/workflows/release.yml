@@ -4,8 +4,17 @@ on:
     tags:
       - "*"
 jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo login ${{ secrets.CRATES_IO_TOKEN }}
+      - run: cargo package
+      - run: cargo publish
   release:
     runs-on: ubuntu-24.04
+    needs: [publish]
     permissions:
       contents: write
       packages: write
